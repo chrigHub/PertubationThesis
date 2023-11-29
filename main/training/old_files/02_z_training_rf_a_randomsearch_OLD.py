@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import make_pipeline
 
-sys.path.insert(0, '../..')
+sys.path.insert(0, '../../..')
 from main.utils import train_utils, data_manage_utils
 
 importlib.reload(train_utils)

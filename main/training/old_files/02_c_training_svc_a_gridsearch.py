@@ -1,4 +1,4 @@
-from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV, KFold
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import make_pipeline
@@ -6,7 +6,7 @@ import os
 import importlib
 import sys
 
-sys.path.insert(0, '../..')
+sys.path.insert(0, '../../..')
 from main.utils import train_utils, data_manage_utils
 
 importlib.reload(data_manage_utils)
@@ -16,12 +16,14 @@ path = None
 # path = "./training_results/RF/2022_11_04-2350"
 
 if path is None:
-    path = [x[0] for x in os.walk("training_results/NB")][-1:][0]
+    path = [x[0] for x in os.walk("training_results/SVC")][-1:][0]
 
 X_train_scaled = data_manage_utils.load_numpy_from_pickle("./processed_files/NEW/X_train_scaled.pkl")
 y_train = data_manage_utils.load_numpy_from_pickle("./processed_files/NEW/y_train.pkl")
 
-grid = {"var_smoothing" : [1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16, 1e-17, 1e-18, 1e-19, 1e-20]}
+grid = {'C': [0.1, 0.5, 1, 5, 10, 50, 100],
+        'kernel': ["rbf"]
+        }
 
 print("Print of grid: ")
 print(grid)
@@ -32,7 +34,7 @@ verbosity = 10
 nr_jobs = 6
 score_name = "balanced_accuracy"
 kf = KFold(n_splits=3)
-clf = GaussianNB()
+clf = SVC()
 # END VARIABLES
 
 
@@ -41,7 +43,7 @@ print("Start time: " + start_string)
 
 imba_pipeline = make_pipeline(sm, clf)
 
-new_params = {'gaussiannb__' + key: grid[key] for key in grid}
+new_params = {'svc__' + key: grid[key] for key in grid}
 print(f"New params: {new_params}")
 
 grid_search = GridSearchCV(imba_pipeline, param_grid=new_params, n_jobs=nr_jobs,
@@ -59,5 +61,5 @@ print("Best params: " + str(best_params))
 print(f"Best score: {best_score}")
 
 time, time_string = data_manage_utils.print_time(time_format="%Y_%m_%d-%H%M")
-out_dir = "../training/training_results/NB/" + time_string
+out_dir = "../training/training_results/SVC/" + time_string
 data_manage_utils.save_search_params(out_dir=out_dir, param_dict=best_params, filename="params_final.txt")

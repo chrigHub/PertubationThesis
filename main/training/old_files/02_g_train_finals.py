@@ -11,7 +11,7 @@ import sys
 import re
 import ast
 
-sys.path.insert(0, '../..')
+sys.path.insert(0, '../../..')
 from main.utils import data_manage_utils
 
 X_train_df = pd.read_pickle("processed_files/NEW/X_train_df.pkl")

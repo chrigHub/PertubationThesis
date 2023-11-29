@@ -7,7 +7,7 @@ import importlib
 from sklearn.ensemble import RandomForestClassifier
 import sys
 
-sys.path.insert(0, '../..')
+sys.path.insert(0, '../../..')
 from main.utils import data_manage_utils
 
 importlib.reload(data_manage_utils)
