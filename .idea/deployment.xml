@@ -7,6 +7,10 @@
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath path="/main/utils/chromedriver.exe" />
+            <excludedPath path="/main/utils/airplane_scrape.py" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
