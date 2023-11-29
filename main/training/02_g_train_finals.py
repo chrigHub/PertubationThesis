@@ -1,31 +1,29 @@
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from imblearn.over_sampling import SMOTE
 import os
-import importlib
 import sys
 import re
 import ast
 
-sys.path.insert(0, './..')
-from utils import data_manage_utils, train_utils
+sys.path.insert(0, '../..')
+from main.utils import data_manage_utils
 
-X_train_df = pd.read_pickle("./processed_files/NEW/X_train_df.pkl")
-y_train_df = pd.read_pickle("./processed_files/NEW/y_train_df.pkl")
-X_test_df = pd.read_pickle("./processed_files/NEW/X_test_df.pkl")
-y_test_df = pd.read_pickle("./processed_files/NEW/y_test_df.pkl")
+X_train_df = pd.read_pickle("processed_files/NEW/X_train_df.pkl")
+y_train_df = pd.read_pickle("processed_files/NEW/y_train_df.pkl")
+X_test_df = pd.read_pickle("processed_files/NEW/X_test_df.pkl")
+y_test_df = pd.read_pickle("processed_files/NEW/y_test_df.pkl")
 # scaler = data_manage_utils.load_scaler_from_sav("./processed_files/NEW/scaler.sav")
 
-path_rf = [x[0] for x in os.walk("./training_results/RF")][-1:][0]
-path_svc = [x[0] for x in os.walk("./training_results/SVC")][-1:][0]
-path_nb = [x[0] for x in os.walk("./training_results/NB")][-1:][0]
-path_mlp = [x[0] for x in os.walk("./training_results/MLP")][-1:][0]
+path_rf = [x[0] for x in os.walk("training_results/RF")][-1:][0]
+path_svc = [x[0] for x in os.walk("training_results/SVC")][-1:][0]
+path_nb = [x[0] for x in os.walk("training_results/NB")][-1:][0]
+path_mlp = [x[0] for x in os.walk("training_results/MLP")][-1:][0]
 
 
 def tryval(val):

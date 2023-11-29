@@ -1,13 +1,9 @@
 import numpy as np
-import datetime
 import matplotlib.pyplot as plt
-import pandas as pd
 import random
-import importlib
 from sklearn.model_selection import cross_validate, StratifiedKFold
-from sklearn.metrics import get_scorer, plot_confusion_matrix, make_scorer, accuracy_score, precision_score, \
-    recall_score, f1_score
-from utils import data_manage_utils
+from sklearn.metrics import get_scorer, plot_confusion_matrix, accuracy_score, precision_score
+from main.utils import data_manage_utils
 
 
 def do_smth(scorer_name, y_true, y_pred):

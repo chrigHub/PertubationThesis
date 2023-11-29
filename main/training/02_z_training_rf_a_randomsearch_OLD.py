@@ -1,16 +1,15 @@
-import pandas as pd
 import numpy as np
 import sys
 import importlib
 
 from sklearn.metrics import make_scorer, f1_score
-from sklearn.model_selection import KFold, RandomizedSearchCV, cross_val_score
+from sklearn.model_selection import KFold, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from imblearn.over_sampling import SMOTE
-from imblearn.pipeline import Pipeline, make_pipeline
+from imblearn.pipeline import make_pipeline
 
-sys.path.insert(0, './..')
-from utils import data_manage_utils, train_utils
+sys.path.insert(0, '../..')
+from main.utils import train_utils, data_manage_utils
 
 importlib.reload(train_utils)
 importlib.reload(data_manage_utils)

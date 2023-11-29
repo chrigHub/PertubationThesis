@@ -1,19 +1,16 @@
 import importlib
-import json
 import os
 import sys
 
-import joblib
 import numpy as np
 import pandas as pd
 import re
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV, GridSearchCV
 
-sys.path.insert(0, "./..")
-from utils import data_manage_utils, train_utils
+sys.path.insert(0, "../..")
+from main.utils import train_utils, data_manage_utils
 
 importlib.reload(data_manage_utils)
 importlib.reload(train_utils)

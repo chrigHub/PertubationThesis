@@ -7,8 +7,8 @@ from sklearn.metrics import balanced_accuracy_score
 import os
 import sys
 
-sys.path.insert(0, './..')
-from utils import data_manage_utils, train_utils
+sys.path.insert(0, '../..')
+from main.utils import train_utils, data_manage_utils
 
 importlib.reload(train_utils)
 importlib.reload(data_manage_utils)
@@ -28,10 +28,10 @@ model = joblib.load(path + "model.joblib")
 
 X_test = pd.read_pickle("./../training/processed_files/"+data_folder+"/X_test_df.pkl")
 y_test = pd.read_pickle("./../training/processed_files/"+data_folder+"/y_test_df.pkl")
-scaler = data_manage_utils.load_scaler_from_sav("./../training/processed_files/"+data_folder+"/scaler.sav")
+scaler = data_manage_utils.load_scaler_from_sav("./../training/processed_files/" + data_folder + "/scaler.sav")
 
 y_pred = data_manage_utils.load_numpy_from_pickle(path + "y_test_pred.pkl")
-X_test_scaled = data_manage_utils.load_numpy_from_pickle("./../training/processed_files/"+data_folder+"/X_test_scaled.pkl")
+X_test_scaled = data_manage_utils.load_numpy_from_pickle("./../training/processed_files/" + data_folder + "/X_test_scaled.pkl")
 
 y_pred_2 = model.predict(X_test_scaled)
 print(f"Balanced accuracy score of model: {balanced_accuracy_score(y_test, y_pred_2)}")

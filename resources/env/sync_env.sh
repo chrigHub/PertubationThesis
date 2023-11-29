@@ -1,0 +1,1 @@
+conda env update --file ma-env39.yml --prune

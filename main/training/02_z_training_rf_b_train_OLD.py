@@ -1,19 +1,14 @@
-import importlib
-
 import pandas as pd
 import numpy as np
 import datetime
 import os
-import re
-import ast
 import joblib
 import importlib
 from sklearn.ensemble import RandomForestClassifier
 import sys
 
-sys.path.insert(0, './..')
-from utils import data_manage_utils, train_utils
-
+sys.path.insert(0, '../..')
+from main.utils import data_manage_utils
 
 importlib.reload(data_manage_utils)
 
@@ -21,7 +16,7 @@ path = None
 # path = "./training_results/RF/2022_11_04-2350"
 data_folder = "B"
 if path is None:
-    path = [x[0] for x in os.walk("./training_results/RF")][-1:][0]
+    path = [x[0] for x in os.walk("training_results/RF")][-1:][0]
 print(path)
 param_dict = data_manage_utils.load_params_from_txt(path + "/params_final.txt")
 print(param_dict)
@@ -29,11 +24,11 @@ param_dict = {str(key)[len("randomforestclassifier__"):]: param_dict[key] for ke
 param_dict.update({"verbose": 10})
 print(param_dict)
 
-X_train = data_manage_utils.load_numpy_from_pickle("./processed_files/"+data_folder+"/X_train_df.pkl")
-y_train = data_manage_utils.load_numpy_from_pickle("./processed_files/"+data_folder+"/y_train.pkl").ravel()
-X_test = data_manage_utils.load_numpy_from_pickle("./processed_files/"+data_folder+"/X_test_df.pkl")
-y_test = data_manage_utils.load_numpy_from_pickle("./processed_files/"+data_folder+"/y_test.pkl").ravel()
-scaler = data_manage_utils.load_scaler_from_sav("./processed_files/"+data_folder+"/scaler.sav")
+X_train = data_manage_utils.load_numpy_from_pickle("./processed_files/" + data_folder + "/X_train_df.pkl")
+y_train = data_manage_utils.load_numpy_from_pickle("./processed_files/" + data_folder + "/y_train.pkl").ravel()
+X_test = data_manage_utils.load_numpy_from_pickle("./processed_files/" + data_folder + "/X_test_df.pkl")
+y_test = data_manage_utils.load_numpy_from_pickle("./processed_files/" + data_folder + "/y_test.pkl").ravel()
+scaler = data_manage_utils.load_scaler_from_sav("./processed_files/" + data_folder + "/scaler.sav")
 
 X_train_scaled = scaler.transform(X_train)
 X_test_scaled = scaler.transform(X_test)

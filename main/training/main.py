@@ -1,10 +1,9 @@
 import DataHolder
-import logging
 from DataHolder import DataHolder
 
 
 def load_and_scale_data():
-    data_holder = DataHolder("./processed_files/B")
+    data_holder = DataHolder("processed_files/B")
     data_holder.scale_data()
     data_holder.print_data_stats()
     return data_holder

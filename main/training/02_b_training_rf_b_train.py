@@ -1,15 +1,13 @@
 import joblib
-import pandas as pd
 import numpy as np
 import sys
 import importlib
 import json
 import os
-import glob
 from sklearn.metrics import accuracy_score
 
-sys.path.insert(0, './..')
-from utils import data_manage_utils, train_utils, general_utils
+sys.path.insert(0, '../..')
+from main.utils import general_utils, train_utils, data_manage_utils
 
 importlib.reload(general_utils)
 importlib.reload(data_manage_utils)
