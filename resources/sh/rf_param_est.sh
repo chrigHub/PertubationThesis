@@ -1,4 +1,4 @@
-python ./../training/main.py \
+python ./../../main/training/main.py \
   --dataspec "B" \
   --clf_type "RF" \
   --est_type "SH" \

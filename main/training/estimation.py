@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -62,7 +63,7 @@ class ParamEstimationManager:
         }
     }
 
-    def __int__(self, clf_type: str, est_type: str, est_params: dict = None):
+    def __init__(self, clf_type: str, est_type: str, est_params: dict = None):
         if est_params is None:
             est_params = {}
 
@@ -86,6 +87,9 @@ class ParamEstimationManager:
         # Create estimator instance
         self.param_estimator = self.load_param_estimator(est_type=est_type, param_dict=est_params)
 
+        # Define names
+        self.est_alg_name = self.__est_alg_dict__.get(est_type).get("name")
+
     def load_param_grid_dict(self, key: str):
         assert isinstance(key, str), f"Expected type of key is 'str'. Got {type(key)}"
         assert key in self.__param_grid_dicts__.keys(), f"Key '{key}' is not allowed. List of allowed keys: {self.__param_grid_dicts__.keys()}"
@@ -99,7 +103,7 @@ class ParamEstimationManager:
         base_clf_opt = self.__base_clf_opt_dicts__.get(clf_type)
         base_clf = base_clf_opt.get("clf")
         assert est_type in base_clf_opt.keys(), f"Key '{est_type}' is not allowed. List of allowed keys: {base_clf_opt.keys()}"
-        est_params = base_clf_opt.get("est_type")
+        est_params = base_clf_opt.get(est_type)
         return base_clf, est_params
 
     def load_param_estimator(self, est_type: str, param_dict: dict):
