@@ -1,6 +1,6 @@
 python ./../../main/training/train.py \
   --dataspec "B" \
-  --clf_type "RF" \
+  --clf_type "KNN" \
   --est_type "SH" \
   --est_cv 5 \
   --est_scoring "accuracy" \

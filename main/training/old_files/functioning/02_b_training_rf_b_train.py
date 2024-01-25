@@ -6,7 +6,7 @@ import json
 import os
 from sklearn.metrics import accuracy_score
 
-sys.path.insert(0, '../..')
+sys.path.insert(0, '../../../..')
 from main.utils import general_utils, train_utils, data_manage_utils
 
 importlib.reload(general_utils)

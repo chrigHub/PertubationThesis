@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
 import os
-import joblib
 import logging
 from sklearn.preprocessing import StandardScaler
 
+ROOT_PATH = "../.././"
+SEPERATOR = 20 * "=" + "{}" + 20 * "="
 
 class DataHolder:
 
@@ -76,3 +77,13 @@ class DataHolder:
             print(f"X_test_scaled: σ = {np.std(self.X_test_scaled):.6f}, μ = {np.mean(self.X_test_scaled):.6f}")
         else:
             logging.warning("Data is not yet scaled. No prints for scaled data available!")
+
+    def get_data_doc_dict(self):
+        data_dict = {
+            "data_folder": self.data_path,
+            "X_train shape": self.X_train_df.shape,
+            "y_train shape": self.y_train.shape,
+            "X_test shape": self.X_test_df.shape,
+            "y_test shape": self.y_test.shape
+        }
+        return data_dict

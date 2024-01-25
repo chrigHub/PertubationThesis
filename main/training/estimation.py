@@ -1,9 +1,14 @@
 import numpy as np
+import re
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 
+ROOT_PATH = "../.././"
+SEPERATOR = 20 * "=" + "{}" + 20 * "="
+
+from main.utils import data_manage_utils
 
 # Add function for retrieving rest of dicts
 class ParamEstimationManager:
@@ -70,6 +75,7 @@ class ParamEstimationManager:
         # Load fixed dictionaries
         self.param_grid = self.load_param_grid_dict(clf_type)
         self.base_clf, self.est_params = self.load_base_clf_and_est_params(clf_type=clf_type, est_type=est_type)
+        self._result_doc_dict = {}
 
         # Remove resource from param_grid if resource is in param_grid is used
         if est_type == "SH":
@@ -83,12 +89,61 @@ class ParamEstimationManager:
             "param_grid": self.param_grid
         }
         est_params.update(specific_params)
+        self.est_params.update(est_params)
 
         # Create estimator instance
-        self.param_estimator = self.load_param_estimator(est_type=est_type, param_dict=est_params)
+        self.param_estimator = self.load_param_estimator(est_type=est_type, param_dict=self.est_params)
 
         # Define names
+        self.est_type_key = est_type
         self.est_alg_name = self.__est_alg_dict__.get(est_type).get("name")
+
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray):
+        assert isinstance(X_train, np.ndarray), f"Expected type of key is 'np.ndarray'. Got {type(X_train)}"
+        assert isinstance(y_train, np.ndarray), f"Expected type of key is 'np.ndarray'. Got {type(y_train)}"
+
+        # Getting start time of estimator process
+        start, start_str = data_manage_utils.print_time()
+        print(f"Starting estimation at {start_str}\n")
+
+        # Perform parameter estimation fit
+        self.param_estimator.fit(X_train, y_train)
+
+        # Getting end time of estimator process
+        end, end_str = data_manage_utils.print_time()
+        print(f"Ending estimation at {end_str} after {end - start} time")
+        print(SEPERATOR)
+
+        best_params = self.param_estimator.best_params_
+        best_score = self.param_estimator.best_score_
+
+        doc_dict = {
+            "time_start": start_str,
+            "time_end": end_str,
+            "time_needed": str(end - start),
+            "clf_name": self.base_clf.__class__.__name__,
+            "clf_module": self.base_clf.__class__.__module__,
+            "best_params": best_params,
+            "score_metric": self.param_estimator.get_params().get("scoring"),
+            "score_value": best_score
+        }
+
+        # Print statistics
+        if self.est_type_key == "SH":
+            n_resources = self.param_estimator.n_resources_
+            n_candidates = self.param_estimator.n_candidates_
+            print(f"Number of resources: {n_resources}")
+            print(f"Number of candidates: {n_candidates}")
+            doc_dict.update({
+                "n_resources": n_resources,
+                "n_candidates": n_candidates
+            })
+        print(f"Best params: {best_params}")
+        print(f"Best score: {best_score}")
+
+        self._result_doc_dict = doc_dict
+
+        return self._result_doc_dict
 
     def load_param_grid_dict(self, key: str):
         assert isinstance(key, str), f"Expected type of key is 'str'. Got {type(key)}"
@@ -116,3 +171,16 @@ class ParamEstimationManager:
         set_params = est_dict.get("params")
         estimator = func(**param_dict, **set_params)
         return estimator
+
+    def get_param_doc_dict(self):
+        clf_str = re.sub(' {2,}', ' ', str(self.base_clf).replace("\n", ""))
+        search_method_dict = {
+            "method_type": str(type(self.param_estimator)),
+            "method_params": data_manage_utils.params_to_string_dict(self.param_estimator.get_params())
+        }
+        param_dict = {
+            "base_clf": clf_str,
+            "param_grid": self.param_grid,
+            "search_method": search_method_dict
+        }
+        return param_dict

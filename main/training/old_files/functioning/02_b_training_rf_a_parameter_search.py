@@ -1,7 +1,6 @@
 import importlib
 import os
 import sys
-
 import numpy as np
 import pandas as pd
 import re
@@ -9,7 +8,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import HalvingGridSearchCV, GridSearchCV
 
-sys.path.insert(0, "../..")
 from main.utils import train_utils, data_manage_utils
 
 importlib.reload(data_manage_utils)
