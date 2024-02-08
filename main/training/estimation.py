@@ -26,7 +26,7 @@ class ParamEstimationManager:
         "KNN": {
             "clf": KNeighborsClassifier(algorithm="ball_tree"),
             "SH": {
-                "min_resources": 100,
+                "min_resources": 3000,
                 "resource": "n_samples",
                 "max_resources": "auto",
             },
