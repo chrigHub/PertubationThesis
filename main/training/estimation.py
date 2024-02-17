@@ -10,11 +10,12 @@ SEPERATOR = 20 * "=" + "{}" + 20 * "="
 
 from main.utils import data_manage_utils
 
+
 # Add function for retrieving rest of dicts
 class ParamEstimationManager:
     __base_clf_opt_dicts__ = {
         "RF": {
-            "clf": RandomForestClassifier(random_state=42, class_weight="balanced"),
+            "clf": RandomForestClassifier(random_state=42, class_weight="balanced", bootstrap=True),
             "SH": {
                 "min_resources": 25,
                 "resource": "n_estimators",
@@ -38,10 +39,10 @@ class ParamEstimationManager:
     __param_grid_dicts__ = {
         "RF": {
             "n_estimators": [int(x) for x in np.linspace(start=25, stop=1600, num=20)],
-            "max_depth": [1, 2, 3, None],
-            "max_features": ["sqrt", 0.3, 0.6, 0.9, 1.0],
-            "min_samples_split": [2, 0.1, 0.2, 0.3],
-            "bootstrap": [True, False],
+            "max_depth": [x for x in range(3, 21, 2)],
+            "max_features": ["sqrt", 0.2, 0.4, 0.6, 0.8, 1.0],
+            "max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
+            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
             "criterion": ["gini", "entropy"]
         },
         "KNN": {
