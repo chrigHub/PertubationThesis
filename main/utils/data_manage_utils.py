@@ -9,6 +9,32 @@ import ast
 import json
 
 
+def save_processed_data_to_folder(filepath: str, X_train: pd.DataFrame, y_train: pd.Series, X_test: pd.DataFrame,
+                                  y_test: pd.Series):
+    assert isinstance(filepath, str), f"filepath expected type 'str'. Got {type(filepath)}"
+    assert isinstance(X_train, pd.DataFrame), f"X_train expected type 'pd.DataFrame'. Got {type(X_train)}"
+    assert isinstance(y_train, pd.Series), f"y_train expected type 'pd.Series'. Got {type(y_train)}"
+    assert isinstance(X_test, pd.DataFrame), f"X_test expected type 'pd.DataFrame'. Got {type(X_test)}"
+    assert isinstance(y_test, pd.Series), f"y_test expected type 'pd.Series'. Got {type(y_test)}"
+
+    pd.to_pickle(X_train, os.path.join(filepath, "X_train_df.pkl"))
+    pd.to_pickle(y_train, os.path.join(filepath, "y_train_df.pkl"))
+    pd.to_pickle(X_test, os.path.join(filepath, "X_test_df.pkl"))
+    pd.to_pickle(y_test, os.path.join(filepath, "y_test_df.pkl"))
+
+
+def load_processed_data_by_folder(filepath: str):
+    assert isinstance(filepath, str), f"filepath expected type 'str'. Got {type(filepath)}"
+    assert os.path.exists(filepath), f"filepath {filepath} does not exist!"
+
+    X_train = pd.read_pickle(os.path.join(filepath, "X_train_df.pkl"))
+    y_train = pd.read_pickle(os.path.join(filepath, "y_train_df.pkl"))
+    X_test = pd.read_pickle(os.path.join(filepath, "X_test_df.pkl"))
+    y_test = pd.read_pickle(os.path.join(filepath, "y_test_df.pkl"))
+
+    return X_train, y_train, X_test, y_test
+
+
 def validate_time(date_string, format: str = '%m-%d-%Y %H:%M:%S'):
     ret = True
     try:
@@ -142,7 +168,7 @@ def params_to_string_dict(params: dict):
     assert type(params) == dict, f"dict type expected, got: {type(params)}"
     ret = {}
     for k, v in params.items():
-        ret.update({k : str(v)})
+        ret.update({k: str(v)})
     return ret
 
 
