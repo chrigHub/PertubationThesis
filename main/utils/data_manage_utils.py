@@ -7,6 +7,7 @@ import os
 import re
 import ast
 import json
+from main.utils.assertion_utils import assert_dtype
 
 
 def save_processed_data_to_folder(filepath: str, X_train: pd.DataFrame, y_train: pd.Series, X_test: pd.DataFrame,
@@ -33,6 +34,17 @@ def load_processed_data_by_folder(filepath: str):
     y_test = pd.read_pickle(os.path.join(filepath, "y_test_df.pkl"))
 
     return X_train, y_train, X_test, y_test
+
+
+def print_shapes(X_train: pd.DataFrame, y_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame):
+    assert isinstance(X_train, pd.DataFrame), f"Expected type 'pd.DataFrame'. Got {type(X_train)}"
+    assert isinstance(y_train, pd.Series), f"Expected type 'pd.Series'. Got {type(y_train)}"
+    assert isinstance(X_test, pd.DataFrame), f"Expected type 'pd.DataFrame'. Got {type(X_test)}"
+    assert isinstance(y_test, pd.Series), f"Expected type 'pd.Series'. Got {type(y_test)}"
+    print("Shape of X_train: " + str(X_train.shape))
+    print("Shape of y_train: " + str(y_train.shape))
+    print("Shape of X_test: " + str(X_test.shape))
+    print("Shape of y_test: " + str(y_test.shape))
 
 
 def validate_time(date_string, format: str = '%m-%d-%Y %H:%M:%S'):
@@ -189,3 +201,36 @@ def load_params_from_txt(filepath: str):
             _d = {line[0]: tryval(line[1])}
             param_dict.update(_d)
     return param_dict
+
+
+def encode_cyclical(df: pd.DataFrame, col: str, max_val: int) -> pd.DataFrame:
+    assert_dtype(input=df, type=pd.DataFrame)
+    assert_dtype(input=col, type=str)
+    assert_dtype(input=max_val, type=int)
+
+    df = df.copy()
+    columns = list(df.columns)
+    index_of_col = columns.index(col)
+    sin_part = np.sin((2 * np.pi * df[col]) / max_val)
+    cos_part = np.cos((2 * np.pi * df[col]) / max_val)
+    df.insert(index_of_col + 1, column=f"{col}_SIN", value=sin_part)
+    df.insert(index_of_col + 1, column=f"{col}_COS", value=cos_part)
+    df = df.drop([col], axis="columns")
+    return df
+
+
+def decode_cyclical(df: pd.DataFrame, sin_col: str, cos_col: str, max_value: int):
+    assert_dtype(input=df, type=pd.DataFrame)
+    assert_dtype(input=sin_col, type=str)
+    assert_dtype(input=cos_col, type=str)
+    assert_dtype(input=max_value, type=int)
+
+    df = df.copy()
+    columns = list(df.columns)
+    index_of_col = columns.index(sin_col)
+    radians = np.arctan2(df[sin_col], df[cos_col])
+    decoded_values = round((np.degrees(radians) % 360) * (max_value / 360)).astype(int)
+
+    df.insert(index_of_col, column=sin_col.split("_SIN")[0], value=decoded_values)
+    df = df.drop(labels=[sin_col, cos_col], axis="columns")
+    return df
