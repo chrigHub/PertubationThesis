@@ -1,7 +1,7 @@
 python ./../../main/training/train.py \
-  --dataspec "B" \
+  --dataspec "B_NEW" \
   --clf_type "RF" \
-  --est_type "SH" \
+  --est_type "EG" \
   --est_cv 5 \
   --est_scoring "accuracy" \
   --est_njobs 5 \

@@ -33,16 +33,27 @@ class ParamEstimationManager:
             },
             "EG": {
             }
+        },
+        "RFR": {
+            "clf": RandomForestClassifier(random_state=42),
+            "SH": {
+                "min_resources": 25,
+                "resource": "n_samples",
+                "max_resources": 1600,
+            },
+            "EG": {
+            }
         }
+
     }
 
     __param_grid_dicts__ = {
         "RF": {
-            "n_estimators": [int(x) for x in np.linspace(start=25, stop=1600, num=20)],
-            "max_depth": [x for x in range(3, 21, 2)],
-            "max_features": ["sqrt", 0.2, 0.4, 0.6, 0.8, 1.0],
-            "max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
-            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            "n_estimators": [int(x) for x in np.linspace(start=20, stop=1000, num=20)],
+            "max_depth": [x for x in range(6, 12, 1)],
+            "max_features": [0.3, 0.5, 0.7, 1.0],
+            #"max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
+            #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
             "criterion": ["gini", "entropy"]
         },
         "KNN": {
@@ -50,7 +61,14 @@ class ParamEstimationManager:
             "weights": ["uniform", "distance"],
             "leaf_size": [int(x) for x in np.linspace(start=10, stop=100, num=20)],
             "p": [1, 2]
-        }
+        },
+        "RFR": {
+            "n_estimators": [int(x) for x in np.linspace(start=20, stop=500, num=20)],
+            "max_depth": [3, 4, 5],
+            "max_features": ["sqrt", 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0],
+            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            "criterion": ["friedman_mse"]
+        },
     }
 
     __est_alg_dict__ = {
