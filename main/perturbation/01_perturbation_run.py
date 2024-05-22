@@ -26,23 +26,6 @@ importlib.reload(data_manage_utils)
 # // The higher the most reduced //
 OPT_THRESHOLD = 1
 
-# FOLDER SELECTION
-path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
-print(f"Using model from path: {path}")
-model = joblib.load(path + "model.joblib")
-
-
-X_test = pd.read_pickle(os.path.join(DATA_FOLDER, "X_test_df.pkl"))
-y_test = pd.read_pickle(os.path.join(DATA_FOLDER, "y_test_df.pkl"))
-scaler = data_manage_utils.load_scaler_from_sav(os.path.noin(DATA_FOLDER, "scaler.sav"))
-
-y_pred = data_manage_utils.load_numpy_from_pickle(path + "y_test_pred.pkl")
-X_test_scaled = data_manage_utils.load_numpy_from_pickle(os.path.noin(DATA_FOLDER, "X_test_scaled.pkl"))
-
-y_pred_2 = model.predict(X_test_scaled)
-print(f"Balanced accuracy score of model: {balanced_accuracy_score(y_test, y_pred_2)}")
-print(f"Shape of true labels: {y_test.shape} \n Shape of pred labels: {y_pred.shape}")
-
 
 def pert_resolution(val, res):
     arr = []
@@ -92,7 +75,7 @@ def pert_ordinal_n(val, n):
     return arr
 
 
-# MaxError would be higher. However not critical for perturbation so resolution was taken.
+# MaxError would be higher. However, not critical for perturbation so resolution was taken.
 pert_temp = {
     "col": "TEMP(C)",
     "func": pert_resolution,
@@ -352,24 +335,11 @@ pert_dep_delay = {
     "level": 3,
     "info": "Sensor resolution is 170 millibar"
 }
-options = [pert_temp, pert_wind_speed, pert_humidity, pert_wind_drct, pert_flight_time, pert_nr_prev_flights,
-           pert_winglets_yn, pert_mtow, pert_vsbty, pert_event_sn, pert_event_ra, pert_rw_1028, pert_rw_09r27l,
-           pert_rw_09l27r, pert_rw_08r26l, pert_rw_08l26r, pert_event_ts, pert_event_br, pert_event_ic, pert_event_dz,
-           pert_event_fg, pert_event_ra, pert_event_sn, pert_sea_level_pressure, pert_dep_delay]
 
-arr = []
-for o in options:
-    arr.append(o.get("col"))
-x_len = len(X_test.columns)
-diff = set(X_test.columns) - set(arr)
-neg_diff = set(arr) - set(X_test.columns)
-print(str(x_len - len(diff)) + "/" + str(x_len))
-print(f"diff: {diff}. neg-diff: {neg_diff}")
-
-X_test["y_true"] = y_test
 
 def filter_options(option, threshold):
-        return option["level"] >= threshold
+    return option["level"] >= threshold
+
 
 def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosity=1):
     assert type(data) == pd.DataFrame, f"got type {type(data)} for param 'data'. Expected  pd.DataFrame"
@@ -379,6 +349,10 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
     print(options)
     options = list(filter(lambda opt: opt["level"] >= option_threshold, options))
     print(options)
+
+    pert_start, pert_start_string = data_manage_utils.print_time()
+    print("Starting perturbation at: " + pert_start_string)
+
     data_copy = data.copy()
     data_copy["pert_id"] = None
     df_cols = data_copy.columns
@@ -403,7 +377,6 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
                 # pert_df = pert_df.append(row_df.T,ignore_index=True)
             c += 1
         end, end_string = data_manage_utils.print_time(time_format="%Y_%m_%d %H:%M:%S")
-        end = datetime.datetime.now()
         print("Ending run " + str(cc) + "/" + str(len(options)) + " at: " + end_string)
         cc += 1
     print("Converting list to pd.DataFrame...")
@@ -414,24 +387,66 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
     return pert_df
 
 
-pert_start, pert_start_string = data_manage_utils.print_time()
-print("Starting perturbation at: " + pert_start_string)
-X_pert = perturbate(X_test.iloc[:], OPT_THRESHOLD, options)
-print("Predicting on created dataframe")
-X_pert['y'] = model.predict(scaler.transform(X_pert[X_pert.columns[:-2]]))
-pert_end, pert_end_string = data_manage_utils.print_time()
-print("Ending perturbation at: " + pert_end_string)
-print(f"Time elapsed: {pert_end - pert_start}")
-time, time_string = data_manage_utils.print_time(time_format="%Y_%m_%d-%H%M")
-
-outdir = os.path.join(ROOT_PATH,"data/perturbation/pert_output", MODEL_SPEC)
-if not os.path.exists(outdir):
-    os.mkdir(outdir)
-outdir = outdir + '/' + time_string
-if not os.path.exists(outdir):
-    os.mkdir(outdir)
+def check_column_diff(X: pd.DataFrame, options: list):
+    arr = []
+    for o in options:
+        arr.append(o.get("col"))
+    x_len = len(X.columns)
+    diff = set(X.columns) - set(arr)
+    neg_diff = set(arr) - set(X.columns)
+    print(str(x_len - len(diff)) + "/" + str(x_len))
+    print(f"diff: {diff}. neg-diff: {neg_diff}")
 
 
-fullname = os.path.join(outdir, "pert_out_df.pkl")
-print(f"Shape of df: {X_pert.shape}")
-X_pert.to_pickle(fullname)
+def save_pert_data(data: pd.DataFrame):
+    time, time_string = data_manage_utils.print_time(time_format="%Y_%m_%d-%H%M")
+    outdir = os.path.join(ROOT_PATH, "data/perturbation/pert_output", MODEL_SPEC)
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+    outdir = outdir + '/' + time_string
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+
+    fullname = os.path.join(outdir, "pert_out_df.pkl")
+    print(f"Shape of df: {data.shape}")
+    data.to_pickle(fullname)
+
+
+if __name__ == "__main__":
+    # LOAD MODEL DATA
+    path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
+    print(f"Using model from path: {path}")
+    model = joblib.load(path + "model.joblib")
+
+    X_test = pd.read_pickle(os.path.join(DATA_FOLDER, "X_test_df.pkl"))
+    y_test = pd.read_pickle(os.path.join(DATA_FOLDER, "y_test_df.pkl"))
+    scaler = data_manage_utils.load_scaler_from_sav(os.path.join(DATA_FOLDER, "scaler.sav"))
+
+    y_pred = data_manage_utils.load_numpy_from_pickle(path + "y_test_pred.pkl")
+    X_test_scaled = data_manage_utils.load_numpy_from_pickle(os.path.join(DATA_FOLDER, "X_test_scaled.pkl"))
+
+    # PREDICT BASED ON MODEL
+    y_pred_2 = model.predict(X_test_scaled)
+    print(f"Balanced accuracy score of model: {balanced_accuracy_score(y_test, y_pred_2)}")
+    print(f"Shape of true labels: {y_test.shape} \n Shape of pred labels: {y_pred.shape}")
+
+    # OPTION SELECTION
+    options = [pert_temp, pert_wind_speed, pert_humidity, pert_wind_drct, pert_flight_time, pert_nr_prev_flights,
+               pert_winglets_yn, pert_mtow, pert_vsbty, pert_event_sn, pert_event_ra, pert_rw_1028, pert_rw_09r27l,
+               pert_rw_09l27r, pert_rw_08r26l, pert_rw_08l26r, pert_event_ts, pert_event_br, pert_event_ic,
+               pert_event_dz,
+               pert_event_fg, pert_event_ra, pert_event_sn, pert_sea_level_pressure, pert_dep_delay]
+
+    # COLUMN CHECKING
+    check_column_diff(X=X_test, options=options)
+
+    # PERFORM PERTURBATION
+    X_test["y_true"] = y_test
+    pert_data = perturbate(X_test.iloc[:], OPT_THRESHOLD, options)
+    print("Predicting on created dataframe")
+
+    # PREDICT ON PERTURBATED DATA
+    pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-2]]))
+
+    # SAVE DATA
+    save_pert_data(data=pert_data)
