@@ -19,7 +19,7 @@ class ParamEstimationManager:
             "SH": {
                 "min_resources": 25,
                 "resource": "n_estimators",
-                "max_resources": 1600,
+                "max_resources": 30, #1600
             },
             "EG": {
             }
@@ -52,8 +52,8 @@ class ParamEstimationManager:
             "n_estimators": [int(x) for x in np.linspace(start=20, stop=1000, num=20)],
             "max_depth": [x for x in range(6, 12, 1)],
             "max_features": [0.3, 0.5, 0.7, 1.0],
-            #"max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
-            #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            "max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
+            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
             "criterion": ["gini", "entropy"]
         },
         "KNN": {
@@ -136,13 +136,17 @@ class ParamEstimationManager:
         best_params = self.param_estimator.best_params_
         best_score = self.param_estimator.best_score_
 
+        # Update base clf dict with best params
+        params = self.base_clf.get_params()
+        params.update(best_params)
+
         doc_dict = {
             "time_start": start_str,
             "time_end": end_str,
             "time_needed": str(end - start),
             "clf_name": self.base_clf.__class__.__name__,
             "clf_module": self.base_clf.__class__.__module__,
-            "best_params": best_params,
+            "best_params": params,
             "score_metric": self.param_estimator.get_params().get("scoring"),
             "score_value": best_score
         }

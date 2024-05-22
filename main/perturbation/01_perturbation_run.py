@@ -416,7 +416,10 @@ if __name__ == "__main__":
     # LOAD MODEL DATA
     path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
     print(f"Using model from path: {path}")
-    model = joblib.load(path + "model.joblib")
+    model_file_path = os.path.join(path, "model.joblib")
+    if not os.path.exists(model_file_path):
+        raise FileNotFoundError(f"Cannot find model through path '{model_file_path}'.")
+    model = joblib.load(model_file_path)
 
     X_test = pd.read_pickle(os.path.join(DATA_FOLDER, "X_test_df.pkl"))
     y_test = pd.read_pickle(os.path.join(DATA_FOLDER, "y_test_df.pkl"))
