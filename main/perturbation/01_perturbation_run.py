@@ -7,31 +7,37 @@ from sklearn.metrics import balanced_accuracy_score
 import os
 import sys
 
-sys.path.insert(0, '../..')
+# Variables
+MODEL_SPEC = "RF"
+DATA_SPEC = "B"
+
+ROOT_PATH = os.path.abspath("../../.")
+INPUT_FOLDER = os.path.join(ROOT_PATH, "data/training/training_results", MODEL_SPEC)
+OUTPUT_FOLDER = os.path.join(ROOT_PATH, "data/perturbation/pert_output", MODEL_SPEC)
+DATA_FOLDER = os.path.join(ROOT_PATH, "data/preprocessing", DATA_SPEC)
+
+sys.path.insert(0, ROOT_PATH)
 from main.utils import train_utils, data_manage_utils
 
 importlib.reload(train_utils)
 importlib.reload(data_manage_utils)
 
-# FOLDER SELECTION
-model_folder = "RF"
-data_folder = "B"
 # PERT PARAMS
 # // The higher the most reduced //
 OPT_THRESHOLD = 1
 
 # FOLDER SELECTION
-path = [x[0] for x in os.walk("../training/training_results/" + model_folder)][-1:][0] + "/"
+path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
 print(f"Using model from path: {path}")
 model = joblib.load(path + "model.joblib")
 
 
-X_test = pd.read_pickle("./../training/processed_files/"+data_folder+"/X_test_df.pkl")
-y_test = pd.read_pickle("./../training/processed_files/"+data_folder+"/y_test_df.pkl")
-scaler = data_manage_utils.load_scaler_from_sav("./../training/processed_files/" + data_folder + "/scaler.sav")
+X_test = pd.read_pickle(os.path.join(DATA_FOLDER, "X_test_df.pkl"))
+y_test = pd.read_pickle(os.path.join(DATA_FOLDER, "y_test_df.pkl"))
+scaler = data_manage_utils.load_scaler_from_sav(os.path.noin(DATA_FOLDER, "scaler.sav"))
 
 y_pred = data_manage_utils.load_numpy_from_pickle(path + "y_test_pred.pkl")
-X_test_scaled = data_manage_utils.load_numpy_from_pickle("./../training/processed_files/" + data_folder + "/X_test_scaled.pkl")
+X_test_scaled = data_manage_utils.load_numpy_from_pickle(os.path.noin(DATA_FOLDER, "X_test_scaled.pkl"))
 
 y_pred_2 = model.predict(X_test_scaled)
 print(f"Balanced accuracy score of model: {balanced_accuracy_score(y_test, y_pred_2)}")
@@ -418,7 +424,7 @@ print("Ending perturbation at: " + pert_end_string)
 print(f"Time elapsed: {pert_end - pert_start}")
 time, time_string = data_manage_utils.print_time(time_format="%Y_%m_%d-%H%M")
 
-outdir = './pert_output/' + model_folder
+outdir = os.path.join(ROOT_PATH,"data/perturbation/pert_output", MODEL_SPEC)
 if not os.path.exists(outdir):
     os.mkdir(outdir)
 outdir = outdir + '/' + time_string
