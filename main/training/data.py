@@ -11,7 +11,7 @@ class DataHolder:
 
     def __init__(self, data_path):
         assert os.path.exists(data_path), f"File path {data_path} does not exist."
-        self.data_path = data_path
+        self.data_path = os.path.abspath(data_path)
 
         file_path = os.path.join(data_path, "X_train_df.pkl")
         assert os.path.exists(file_path), f"X_train_df DataFrame was not found for path {file_path}"

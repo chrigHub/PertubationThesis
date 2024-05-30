@@ -412,7 +412,7 @@ def save_pert_data(data: pd.DataFrame):
     data.to_pickle(fullname)
 
 
-if __name__ == "__main__":
+def main():
     # LOAD MODEL DATA
     path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
     print(f"Using model from path: {path}")
@@ -453,3 +453,7 @@ if __name__ == "__main__":
 
     # SAVE DATA
     save_pert_data(data=pert_data)
+
+
+if __name__ == "__main__":
+    main()

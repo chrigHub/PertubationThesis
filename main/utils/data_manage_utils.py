@@ -166,7 +166,33 @@ def find_best_scores(dict_list: list, score_name: str):
     return best_tuple
 
 
-def save_search_params(out_dir: str, param_dict: dict, filename: str = "params.txt"):
+def read_search_params(file_path: str):
+    """
+    Reads a JSON file and returns its contents as a dictionary.
+
+    :param file_path: Path to the JSON file.
+    :return: A dictionary with the JSON data.
+    :raises FileNotFoundError: If the file does not exist.
+    :raises json.JSONDecodeError: If the file is not a valid JSON.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            return data
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The file at {file_path} does not exist.")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error decoding JSON from file at {file_path}: {e}")
+
+
+def save_search_params(out_dir: str, param_dict: dict, filename: str = "estimation_settings.json"):
+    """
+    Saves a dictionary as .json file.
+
+    :param out_dir: Folder to save location.
+    :param param_dict: Dictionary to be saved.
+    :param filename: Filename of the .json file.
+    """
     assert type(param_dict) == dict, f"dict type expected, got: {type(param_dict)}"
     filename = os.path.join(out_dir, filename)
     if not os.path.exists(out_dir):
