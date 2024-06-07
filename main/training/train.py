@@ -42,17 +42,17 @@ def perform_estimation(X_train, y_train, args):
     return estimation_manager, result_doc_dict
 
 
-def predict_clf(data_holder: DataHolder, estimation_manager: ParamEstimationManager):
-    print(SEPERATOR.format("START TRAINING"))
-
-    X_train, y_train, X_test, y_test = data_holder.get_data_as_numpy_scaled()
-    est = estimation_manager.param_estimator
-
-    y_train_pred = est.predict(X_train)
-    y_test_pred = est.predict(X_test)
-
-    print(SEPERATOR.format("EMD TRAINING"))
-    return y_train_pred, y_test_pred
+#def predict_clf(data_holder: DataHolder, estimation_manager: ParamEstimationManager):
+#    print(SEPERATOR.format("START TRAINING"))
+#
+#    X_train, y_train, X_test, y_test = data_holder.get_data_as_numpy_scaled()
+#    est = estimation_manager.param_estimator
+#
+#    y_train_pred = est.predict(X_train)
+#    y_test_pred = est.predict(X_test)
+#
+#    print(SEPERATOR.format("EMD TRAINING"))
+#    return y_train_pred, y_test_pred
 
 
 def create_est_output_files(args: dict, data_holder: DataHolder, estimation_manager: ParamEstimationManager,
@@ -78,9 +78,7 @@ def create_est_output_files(args: dict, data_holder: DataHolder, estimation_mana
         "est_info": estimation_manager.get_param_doc_dict()
     }
 
-    print("\nSaving y_pred files ...")
-    data_manage_utils.save_numpy_to_pickle(y_train_pred, os.path.join(output_folder, "y_train_pred.pkl"))
-    data_manage_utils.save_numpy_to_pickle(y_test_pred, os.path.join(output_folder, "y_test_pred.pkl"))
+    print("\nSaving search param json file...")
     # Write result_doc_dict to output folder
     data_manage_utils.save_search_params(output_folder, final_dict, "estimation_settings.json")
 
@@ -105,11 +103,8 @@ def main():
     # Perform estimation
     estimation_manager, result_doc_dict = perform_estimation(X_train, y_train, args)
 
-    # Train
-    y_train_pred, y_test_pred = predict_clf(data_holder, estimation_manager)
-
     # Create documentation files
-    create_est_output_files(args, data_holder, estimation_manager, result_doc_dict, y_train_pred, y_test_pred)
+    create_est_output_files(args, data_holder, estimation_manager, result_doc_dict)
 
 
 if __name__ == "__main__":

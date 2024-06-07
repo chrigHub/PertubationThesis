@@ -52,15 +52,14 @@ def main():
     if not os.path.exists(settings_path):
         raise FileNotFoundError(f"Path '{settings_path}' does not exist. Program will end.")
 
-    dict = data_manage_utils.read_search_params(settings_path)
+    settings_dict = data_manage_utils.read_search_params(settings_path)
 
     # Load training data
-    data_info = dict.get("data_info")
-    data_folder = data_info.get("data_folder")
+    data_folder = data_manage_utils.find_data_path_by_settings_file(settings_path, ROOT_PATH)
     X_train, y_train, X_test, y_test = data_manage_utils.load_processed_data_by_folder(data_folder)
 
     # Load model instance and parameters
-    result_info = dict.get("result_info")
+    result_info = settings_dict.get("result_info")
     clf_name = result_info.get("clf_name")
     module_name = result_info.get("clf_module")
     model_params = result_info.get("best_params")
@@ -90,9 +89,12 @@ def main():
     model.fit(X_train, y_train)
 
     # Print accuracy on evaluation for checking
-    y_pred = model.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
-    print(f"Predicted accuracy score is: {acc:.4f}")
+    y_test_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_test_pred)
+    print(f"Predicted test accuracy score is: {acc:.4f}")
+    y_train_pred = model.predict(X_train)
+    acc = accuracy_score(y_train, y_train_pred)
+    print(f"Predicted train accuracy score is: {acc:.4f}")
 
     # Outputting model file as joblib
     print(f"Saving model as .joblib...")
@@ -100,6 +102,9 @@ def main():
     joblib.dump(model, out_model_path, compress=("zlib", 3))
     print(f"Model Size: {np.round(os.path.getsize(out_model_path) / 1024 / 1024, 2)} MB")
 
+    print("\nSaving y_pred files ...")
+    data_manage_utils.save_numpy_to_pickle(y_train_pred, os.path.join(folder, "y_train_pred.pkl"))
+    data_manage_utils.save_numpy_to_pickle(y_test_pred, os.path.join(folder, "y_test_pred.pkl"))
 
 if __name__ == "__main__":
     main()

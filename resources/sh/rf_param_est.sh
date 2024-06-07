@@ -1,5 +1,5 @@
 python ./../../main/training/train.py \
-  --dataspec "B_NEW" \
+  --dataspec "CCLASS" \
   --clf_type "RF" \
   --est_type "EG" \
   --est_cv 5 \

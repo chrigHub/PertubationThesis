@@ -49,12 +49,12 @@ class ParamEstimationManager:
 
     __param_grid_dicts__ = {
         "RF": {
-            "n_estimators": [int(x) for x in np.linspace(start=20, stop=1000, num=20)],
-            #"max_depth": [x for x in range(6, 12, 1)],
-            #"max_features": [0.3, 0.5, 0.7, 1.0],
-            #"max_samples": [0.2, 0.4, 0.6, 0.8, 1.0],
+            "n_estimators": [int(x) for x in np.linspace(start=100, stop=1000, num=10)],
+            "max_depth": [x for x in range(6, 12, 1)],
+            "max_features": [0.3, 0.5, 0.7, 1.0],
+            "max_samples": [0.3, 0.5, 0.7, 1.0]
             #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
-            "criterion": ["gini", "entropy"]
+            #"criterion": ["gini", "entropy"]
         },
         "KNN": {
             "n_neighbors": [int(x) for x in np.linspace(start=5, stop=60, num=20)],

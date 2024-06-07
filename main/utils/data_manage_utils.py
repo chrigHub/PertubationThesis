@@ -201,6 +201,23 @@ def save_search_params(out_dir: str, param_dict: dict, filename: str = "estimati
     with open(filename, 'w') as data:
         data.write(json.dumps(param_dict))
 
+def find_data_path_by_settings_file(settings_path, root_path = "./"):
+    # Check if file exists
+    if not os.path.exists(settings_path):
+        raise FileNotFoundError(f"Path '{settings_path}' does not exist. Program will end.")
+
+    settings_dict = read_search_params(settings_path)
+    data_info = settings_dict.get("data_info")
+    data_folder = data_info.get("data_folder")
+
+    if not os.path.exists(data_folder):
+        data_folder = data_folder.split("data/preprocessing/", 1)[1]
+        data_folder = os.path.join(root_path, "data/preprocessing/", data_folder)
+        if not os.path.exists(data_folder):
+            raise FileNotFoundError(f"Cannot find data folder through path '{data_folder}'.")
+
+    return data_folder
+
 
 def params_to_string_dict(params: dict):
     assert type(params) == dict, f"dict type expected, got: {type(params)}"

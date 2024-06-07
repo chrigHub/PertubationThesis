@@ -1,20 +1,15 @@
+import argparse
+
 import numpy as np
 import pandas as pd
 import datetime
 import joblib
 import importlib
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import accuracy_score
 import os
 import sys
 
-# Variables
-MODEL_SPEC = "RF"
-DATA_SPEC = "B"
-
 ROOT_PATH = os.path.abspath("../../.")
-INPUT_FOLDER = os.path.join(ROOT_PATH, "data/training/training_results", MODEL_SPEC)
-OUTPUT_FOLDER = os.path.join(ROOT_PATH, "data/perturbation/pert_output", MODEL_SPEC)
-DATA_FOLDER = os.path.join(ROOT_PATH, "data/preprocessing", DATA_SPEC)
 
 sys.path.insert(0, ROOT_PATH)
 from main.utils import train_utils, data_manage_utils
@@ -398,39 +393,55 @@ def check_column_diff(X: pd.DataFrame, options: list):
     print(f"diff: {diff}. neg-diff: {neg_diff}")
 
 
-def save_pert_data(data: pd.DataFrame):
-    time, time_string = data_manage_utils.print_time(time_format="%Y_%m_%d-%H%M")
-    outdir = os.path.join(ROOT_PATH, "data/perturbation/pert_output", MODEL_SPEC)
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-    outdir = outdir + '/' + time_string
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-
-    fullname = os.path.join(outdir, "pert_out_df.pkl")
+def save_pert_data(data: pd.DataFrame, out_path : str):
+    fullname = os.path.join(out_path, "pert_out_df.pkl.gz")
     print(f"Shape of df: {data.shape}")
-    data.to_pickle(fullname)
+    print(f"Compressing perturbation outcome as .gzip")
+    data.to_pickle(fullname, compression="gzip")
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model")
+    parser.add_argument("--folder")
+    args = parser.parse_args()
+
     # LOAD MODEL DATA
-    path = [x[0] for x in os.walk(INPUT_FOLDER)][-1:][0] + "/"
+    path = os.path.join(ROOT_PATH, "data/training/training_results", args.model, args.folder)
     print(f"Using model from path: {path}")
+
+    # Check if model is built
     model_file_path = os.path.join(path, "model.joblib")
     if not os.path.exists(model_file_path):
         raise FileNotFoundError(f"Cannot find model through path '{model_file_path}'.")
+
+    # Load model from joblib
     model = joblib.load(model_file_path)
 
-    X_test = pd.read_pickle(os.path.join(DATA_FOLDER, "X_test_df.pkl"))
-    y_test = pd.read_pickle(os.path.join(DATA_FOLDER, "y_test_df.pkl"))
-    scaler = data_manage_utils.load_scaler_from_sav(os.path.join(DATA_FOLDER, "scaler.sav"))
+    # Load search settings params from json
+    settings_path = os.path.join(path, "estimation_settings.json")
+    if not os.path.exists(settings_path):
+        raise FileNotFoundError(f"Cannot find settings file through path '{settings_path}'.")
+    data_folder = data_manage_utils.find_data_path_by_settings_file(settings_path, ROOT_PATH)
 
-    y_pred = data_manage_utils.load_numpy_from_pickle(path + "y_test_pred.pkl")
-    X_test_scaled = data_manage_utils.load_numpy_from_pickle(os.path.join(DATA_FOLDER, "X_test_scaled.pkl"))
+    X_train, y_train, X_test, y_test = data_manage_utils.load_processed_data_by_folder(data_folder)
+
+    scale_path = os.path.join(data_folder, "scaler.sav")
+    do_scale = False
+    if os.path.exists(scale_path):
+        print("Model input is being scaled.")
+        do_scale = True
+        scaler = data_manage_utils.load_scaler_from_sav(scale_path)
+        X_test_scaled = scaler.transform(X_test)
+
+    y_pred = data_manage_utils.load_numpy_from_pickle(os.path.join(path , "y_test_pred.pkl"))
 
     # PREDICT BASED ON MODEL
-    y_pred_2 = model.predict(X_test_scaled)
-    print(f"Balanced accuracy score of model: {balanced_accuracy_score(y_test, y_pred_2)}")
+    if do_scale:
+        y_pred_check = model.predict(X_test_scaled)
+    else:
+        y_pred_check = model.predict(X_test)
+    print(f"Accuracy score of model: {accuracy_score(y_test, y_pred_check)}")
     print(f"Shape of true labels: {y_test.shape} \n Shape of pred labels: {y_pred.shape}")
 
     # OPTION SELECTION
@@ -439,6 +450,13 @@ def main():
                pert_rw_09l27r, pert_rw_08r26l, pert_rw_08l26r, pert_event_ts, pert_event_br, pert_event_ic,
                pert_event_dz,
                pert_event_fg, pert_event_ra, pert_event_sn, pert_sea_level_pressure, pert_dep_delay]
+
+    # IDENTIFY NON SUITABLE OPTIONS
+    idxs = []
+    for i,o in enumerate(options):
+        if o.get("col") in X_test.columns:
+            idxs.append(i)
+    options = [options[i] for i in idxs]
 
     # COLUMN CHECKING
     check_column_diff(X=X_test, options=options)
@@ -449,10 +467,13 @@ def main():
     print("Predicting on created dataframe")
 
     # PREDICT ON PERTURBATED DATA
-    pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-2]]))
+    if do_scale:
+        pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-2]]))
+    else:
+        pert_data['y'] = model.predict(pert_data[pert_data.columns[:-2]])
 
     # SAVE DATA
-    save_pert_data(data=pert_data)
+    save_pert_data(data=pert_data, out_path=path)
 
 
 if __name__ == "__main__":
