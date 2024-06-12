@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV, GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
@@ -19,7 +19,7 @@ class ParamEstimationManager:
             "SH": {
                 "min_resources": 25,
                 "resource": "n_estimators",
-                "max_resources": 30, #1600
+                "max_resources": 1000,
             },
             "EG": {
             }
@@ -39,12 +39,31 @@ class ParamEstimationManager:
             "SH": {
                 "min_resources": 25,
                 "resource": "n_samples",
-                "max_resources": 1600,
+                "max_resources": 1000,
+            },
+            "EG": {
+            }
+        },
+        "ADAB": {
+            "clf": AdaBoostClassifier(random_state=42),
+            "SH": {
+                "min_resources": 25,
+                "resource": "n_estimators",
+                "max_resources": 1000
+            },
+            "EG": {
+            }
+        },
+        "XGB": {
+            "clf": GradientBoostingClassifier(random_state=42),
+            "SH": {
+                "min_resources": 25,
+                "resource": "n_estimators",
+                "max_resources": 1000
             },
             "EG": {
             }
         }
-
     }
 
     __param_grid_dicts__ = {
@@ -52,9 +71,9 @@ class ParamEstimationManager:
             "n_estimators": [int(x) for x in np.linspace(start=100, stop=1000, num=10)],
             "max_depth": [x for x in range(6, 12, 1)],
             "max_features": [0.3, 0.5, 0.7, 1.0],
-            "max_samples": [0.3, 0.5, 0.7, 1.0]
-            #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
-            #"criterion": ["gini", "entropy"]
+            "max_samples": [0.3, 0.5, 0.7, 1.0],
+            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            "criterion": ["gini", "entropy"]
         },
         "KNN": {
             "n_neighbors": [int(x) for x in np.linspace(start=5, stop=60, num=20)],
@@ -69,6 +88,15 @@ class ParamEstimationManager:
             "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
             "criterion": ["friedman_mse"]
         },
+        "ADAB": {
+            "n_estimators": np.arange(start=400, stop=1000, step=100),
+            "learning_rate": np.arange(start=0.1, stop=1.2, step=0.2)
+        },
+        "XGB": {
+            "n_estimators": np.arange(start=400, stop=900, step=100),
+            "learning_rate": np.arange(start=0.1, stop=1.2, step=0.2),
+            "max_depth": [x for x in range(3, 15, 2)],
+        }
     }
 
     __est_alg_dict__ = {
