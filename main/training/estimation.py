@@ -68,12 +68,12 @@ class ParamEstimationManager:
 
     __param_grid_dicts__ = {
         "RF": {
-            "n_estimators": [int(x) for x in np.linspace(start=100, stop=1000, num=10)],
-            "max_depth": [x for x in range(6, 12, 1)],
-            "max_features": [0.3, 0.5, 0.7, 1.0],
-            "max_samples": [0.3, 0.5, 0.7, 1.0],
-            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
-            "criterion": ["gini", "entropy"]
+            "n_estimators": [int(x) for x in np.arange(start=1000, stop=1100, step=100)],
+            "max_depth": [x for x in range(16, 21, 3)],
+            #"max_features": [0.3, 0.5, 0.7, 1.0]
+            #"max_samples": [0.3, 0.5, 0.7, 1.0],
+            #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            #"criterion": ["gini", "entropy"]
         },
         "KNN": {
             "n_neighbors": [int(x) for x in np.linspace(start=5, stop=60, num=20)],
@@ -89,13 +89,13 @@ class ParamEstimationManager:
             "criterion": ["friedman_mse"]
         },
         "ADAB": {
-            "n_estimators": np.arange(start=400, stop=1000, step=100),
-            "learning_rate": np.arange(start=0.1, stop=1.2, step=0.2)
+            "n_estimators": [int(x) for x in np.arange(start=600, stop=1000, step=100)],
+            "learning_rate": [float(x) for x in np.arange(start=0.1, stop=1.2, step=0.2)]
         },
         "XGB": {
-            "n_estimators": np.arange(start=400, stop=900, step=100),
-            "learning_rate": np.arange(start=0.1, stop=1.2, step=0.2),
-            "max_depth": [x for x in range(3, 15, 2)],
+            "n_estimators": [int(x) for x in np.arange(start=400, stop=700, step=100)],
+            "learning_rate": [float(x) for x in np.arange(start=0.1, stop=1.2, step=0.5)],
+            "max_depth": [x for x in range(3, 15, 2)]
         }
     }
 

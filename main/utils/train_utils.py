@@ -7,6 +7,7 @@ import warnings
 from sklearn.model_selection import cross_validate, StratifiedKFold
 from sklearn.metrics import get_scorer, plot_confusion_matrix, accuracy_score, precision_score
 from main.utils import time_utils
+from imblearn.pipeline import make_pipeline
 from typing import Union
 
 
@@ -44,7 +45,7 @@ def calc_mean_result_stats(scores: dict):
 
 
 def custom_cross_validate(clf, X: np.ndarray, y: np.ndarray, n_folds: int = 5,
-                          scoring: list = ["accuracy"], verbosity: int = 1, return_train_scores: bool = False):
+                          scoring: list = ["accuracy"], verbosity: int = 1, return_train_scores: bool = False, sampler = None):
     """
         Performs n-fold cross validation
 
@@ -85,6 +86,9 @@ def custom_cross_validate(clf, X: np.ndarray, y: np.ndarray, n_folds: int = 5,
         y = y.to_numpy()
     make_raveled(y)
 
+    # Prepare pipeline
+    pipeline = make_pipeline(sampler, clf)
+
     # Prepare parameters for cv
     cv = StratifiedKFold(n_splits=n_folds)
     train_scores = {}
@@ -102,19 +106,19 @@ def custom_cross_validate(clf, X: np.ndarray, y: np.ndarray, n_folds: int = 5,
         X_val, y_val = X[val_fold_idx], y[val_fold_idx]
 
         fit_start, _ = time_utils.print_time()
-        fit_model = clf.fit(X_train, y_train)
+        pipeline.fit(X_train, y_train)
         fit_end, _ = time_utils.print_time()
         _time = fit_end - fit_start
         fit_times.append(_time.total_seconds())
 
         v_pred_start, _ = time_utils.print_time()
-        y_val_pred = fit_model.predict(X_val)
+        y_val_pred = pipeline.predict(X_val)
         v_pred_end, _ = time_utils.print_time()
         _time = v_pred_end - v_pred_start
         v_pred_times.append(_time.total_seconds())
 
         t_pred_start, _ = time_utils.print_time()
-        y_train_pred = fit_model.predict(X_train)
+        y_train_pred = pipeline.predict(X_train)
         t_pred_end, _ = time_utils.print_time()
         _time = t_pred_end - t_pred_start
         t_pred_times.append(_time.total_seconds())

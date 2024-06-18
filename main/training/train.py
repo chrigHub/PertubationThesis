@@ -56,7 +56,7 @@ def perform_estimation(X_train, y_train, args):
 
 
 def create_est_output_files(args: dict, data_holder: DataHolder, estimation_manager: ParamEstimationManager,
-                            result_doc_dict: dict, y_train_pred: np.ndarray, y_test_pred: np.ndarray):
+                            result_doc_dict: dict):
     # Create storage folder
     run_time = data_manage_utils.print_time("%Y_%m_%d-%H%M")[1]
     output_folder = os.path.join(ROOT_PATH, "data/training/training_results")

@@ -35,6 +35,16 @@ def load_processed_data_by_folder(filepath: str):
 
     return X_train, y_train, X_test, y_test
 
+def load_processed_data_by_folder_as_numpy(filepath: str):
+    assert isinstance(filepath, str), f"filepath expected type 'str'. Got {type(filepath)}"
+    assert os.path.exists(filepath), f"filepath {filepath} does not exist!"
+
+    X_train = pd.read_pickle(os.path.join(filepath, "X_train_df.pkl")).to_numpy()
+    y_train = pd.read_pickle(os.path.join(filepath, "y_train_df.pkl")).to_numpy()
+    X_test = pd.read_pickle(os.path.join(filepath, "X_test_df.pkl")).to_numpy()
+    y_test = pd.read_pickle(os.path.join(filepath, "y_test_df.pkl")).to_numpy()
+
+    return X_train, y_train, X_test, y_test
 
 def print_shapes(X_train: pd.DataFrame, y_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame):
     assert isinstance(X_train, pd.DataFrame), f"Expected type 'pd.DataFrame'. Got {type(X_train)}"

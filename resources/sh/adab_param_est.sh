@@ -1,5 +1,5 @@
 python ./../../main/training/train.py \
-  --dataspec "CCLASS" \
+  --dataspec "DCLASS" \
   --clf_type "ADAB" \
   --est_type "EG" \
   --est_cv 5 \
