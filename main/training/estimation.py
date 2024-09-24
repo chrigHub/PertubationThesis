@@ -70,10 +70,10 @@ class ParamEstimationManager:
         "RF": {
             "n_estimators": [int(x) for x in np.arange(start=1000, stop=1100, step=100)],
             "max_depth": [x for x in range(16, 21, 3)],
-            #"max_features": [0.3, 0.5, 0.7, 1.0]
-            #"max_samples": [0.3, 0.5, 0.7, 1.0],
-            #"min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
-            #"criterion": ["gini", "entropy"]
+            "max_features": [0.3, 0.5, 0.7, 1.0],
+            "max_samples": [0.3, 0.5, 0.7, 1.0],
+            "min_samples_split": [2, 0.1, 0.2, 0.3, 0.5],
+            "criterion": ["gini", "entropy"]
         },
         "KNN": {
             "n_neighbors": [int(x) for x in np.linspace(start=5, stop=60, num=20)],
