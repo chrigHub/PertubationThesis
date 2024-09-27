@@ -93,6 +93,31 @@ def col_stats_to_string(df: pd.DataFrame, attr_names: [] = []):
             ret = ret + "\n" + "Range: [" + str(df[attr].min()) + ";" + str(df[attr].max()) + "]"
     return ret
 
+def col_stats_to_table(df: pd.DataFrame, attr_names: [] = []):
+    if not attr_names:
+        attr_names = df.columns
+    ret = []
+    for attr in attr_names:
+        name = attr
+        type = str(df[attr].dtype)
+        nr_of_unique = len(df[attr].unique())
+        nr_of_null = df[attr].isna().sum()
+        nnull = str(nr_of_null)
+        nunique = str(nr_of_unique)
+        doubled = str(len(df) - nr_of_null - nr_of_unique)
+        if df[attr].dtype == 'O':
+            is_time, _ = validate_time(df[attr][df[attr].notna()].iloc[0])
+            if is_time:
+                date_series = df[attr].apply(lambda x: validate_time(x)[1])
+                range = "[" + str(date_series.min()) + ";" + str(date_series.max()) + "]"
+            else:
+                range = "char(" + str(df[attr].str.len().min()) + "-" + str(
+                    df[attr].str.len().max()) + ")"
+        else:
+            range = "[" + str(df[attr].min()) + ";" + str(df[attr].max()) + "]"
+        ret.append([name, type,nnull,nunique,doubled,range])
+    ret_df = pd.DataFrame(data=ret, columns=["Name", "Type", "# Null", "# Unique", "Doubled", "range"])
+    return ret_df
 
 def read_csv_from_subfolder(path):
     if path:
