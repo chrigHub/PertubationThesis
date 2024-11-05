@@ -93,9 +93,11 @@ def col_stats_to_string(df: pd.DataFrame, attr_names: [] = []):
             ret = ret + "\n" + "Range: [" + str(df[attr].min()) + ";" + str(df[attr].max()) + "]"
     return ret
 
-def col_stats_to_table(df: pd.DataFrame, attr_names: [] = []):
+def col_stats_to_table(df: pd.DataFrame, attr_names: [] = [], headers = []):
     if not attr_names:
         attr_names = df.columns
+    if not headers:
+        headers = ["name", "type", "range", "null", "unique", "doubled", "example"]
     ret = []
     for attr in attr_names:
         name = attr
@@ -115,8 +117,33 @@ def col_stats_to_table(df: pd.DataFrame, attr_names: [] = []):
                     df[attr].str.len().max()) + ")"
         else:
             range = "[" + str(df[attr].min()) + ";" + str(df[attr].max()) + "]"
-        ret.append([name, type,nnull,nunique,doubled,range])
-    ret_df = pd.DataFrame(data=ret, columns=["Name", "Type", "# Null", "# Unique", "Doubled", "range"])
+        example = df.iloc[0][attr]
+        row = []
+        cols = []
+        if "name" in headers:
+            row.append(name)
+            cols.append("Name")
+        if "type" in headers:
+            row.append(type)
+            cols.append("Type")
+        if "range" in headers:
+            row.append(range)
+            cols.append("Range")
+        if "null" in headers:
+            row.append(nnull)
+            cols.append("# Null")
+        if "unique" in headers:
+            row.append(nunique)
+            cols.append("# Unique")
+        if "doubled" in headers:
+            row.append(doubled)
+            cols.append("# Doubled")
+        if "example" in headers:
+            row.append(example)
+            cols.append("Example")
+        ret.append(row)
+
+    ret_df = pd.DataFrame(data=ret, columns=cols)
     return ret_df
 
 def read_csv_from_subfolder(path):

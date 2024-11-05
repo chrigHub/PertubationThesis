@@ -23,22 +23,29 @@ OPT_THRESHOLD = 1
 
 
 def pert_resolution(val, res):
-    arr = []
-    for i in np.arange(res / 10, res, res / 10):
-        low_val = val - i
-        high_val = val + i
-        arr.append(low_val)
-        arr.append(high_val)
-    return arr
+    lower_bound = val - res
+    upper_bound = val + res
+
+    step_size = res / 4
+
+    rounding = max(0, -int(np.floor(np.log10(step_size))))
+
+    lower_values = np.round(np.arange(lower_bound, val, step_size)[-4:], rounding)
+    upper_values = np.round(np.arange(val + step_size, upper_bound + step_size, step_size)[:4], rounding)
+
+    result = np.concatenate((lower_values, upper_values))
+
+    return result
 
 
 def pert_percent(val, perc):
-    arr = []
-    for i in range(1, 10, 1):
-        low_val = val * (1 - ((perc / 1000) * i))
-        high_val = val * (1 + ((perc / 1000) * i))
-        arr.append(low_val)
-        arr.append(high_val)
+    steps = 8
+
+    lower_bound = val * (1 - perc / 100)
+    upper_bound = val * (1 + perc / 100)
+
+    arr = np.linspace(lower_bound, upper_bound, steps + 1)
+    arr = arr[arr != val]
     return arr
 
 
@@ -53,11 +60,20 @@ def pert_percent_int(val, perc):
 
 
 def pert_cat(val, cats):
-    arr = []
-    for c in cats:
-        if val != c:
-            arr.append(c)
-    return arr
+    # Find the closest value in the array to the specified value
+    array = np.array(cats)
+    closest_index = (np.abs(array - val)).argmin()
+
+    # Determine the indices for the perturbation: one step up and down
+    indices = []
+    if closest_index > 0:
+        indices.append(closest_index - 1)
+    if closest_index < len(array) - 1:
+        indices.append(closest_index + 1)
+
+    # Return the values corresponding to the selected indices
+    perturbed_values = array[indices].tolist()
+    return perturbed_values
 
 
 def pert_ordinal_n(val, n):
@@ -77,52 +93,63 @@ def pert_extreme(val, tup):
     return []
 
 
+def pert_res_or_perc(val, tup):
+    # tuple in form (res,perc)
+    perc_val = val * (1 + (tup[1] / 100))
+    res_val = val + tup[0]
+    if perc_val >= res_val:
+        return pert_percent(val, tup[1])
+    else:
+        return pert_resolution(val, tup[0])
+
+
 # MaxError would be higher. However, not critical for perturbation so resolution was taken.
 pert_temp = {
     "col": "TEMP(C)",
     "func": pert_percent,
-    "param": 0.75,
+    "param": 1.345,
     "level": 3,
-    "info": "Sensor tolerance is 0.75%"
+    "info": "Sensor tolerance based on RMSE is 1.345% on median"
 }
 pert_dew_temp = {
     "col": "DEWPOINT_TEMP(C)",
     "func": pert_percent,
-    "param": 0.9,
+    "param": 1.93,
     "level": 3,
-    "info": "Sensor tolerance is 0.9%"
+    "info": "Sensor tolerance based on RMSE is 1.8% on median"
 }
 pert_wind_speed = {
     "col": "WIND_SPEED(KMH)",
-    "func": pert_percent,
-    "param": 3.7,
+    "func": pert_res_or_perc,
+    "param": (3.704, 5),
     "level": 3,
-    "info": "Sensor accuracy is 3.7%"
+    "info": " 5% or 3.704 km/h (2 knots) whichever is greater."
 }
 pert_humidity = {
     "col": "REL_HUMIDITY(PERCENT)",
-    "func": pert_percent,
-    "param": 2,
+    "func": pert_res_or_perc,
+    "param": (3.948, 5.445),
     "level": 3,
-    "info": "Based on calculation with temperature and dew point temperature worst case tolerance is 2%."
+    "info": "Based on calculation with temperature and dew point temperature worst case tolerance is 5.445% or 3.948. Whichever is greater"
 }
 pert_wind_drct = {
     "col": "WIND_DRCT(DEG)",
     "func": pert_resolution,
     "param": 5,
     "level": 3,
-    "info": " 10 Degree resolution"
+    "info": "5 Degree resolution"
 }
+# TODO possibly add combined measures for wind drct and elapsed time
 pert_elapsed_time = {
     "col": "CRS_ELAPSED_TIME(MINS)",
-    "func": pert_percent_int,
+    "func": pert_percent,
     "param": 5,
     "level": 1,
     "info": "Standard perturbation value. Default guess"
 }
 pert_nr_prev_flights = {
     "col": "NR_PREV_ARR_FLIGHTS(1HR)",
-    "func": pert_percent_int,
+    "func": pert_percent,
     "param": 5,
     "level": 1,
     "info": "Standard perturbation value. Default guess"
@@ -138,109 +165,109 @@ pert_approach_speed = {
     "col": "APPROACH_SPEED(KMH)",
     "func": pert_percent,
     "param": 1.4,
-    "level": 1,
+    "level": 2,
     "info": "1.4% average closest distance to other unique values. Chosen since approach speed is not strictly cardinal."
 }
 
 pert_tail_height = {
     "col": "TAIL_HEIGHT(M)",
     "func": pert_percent,
-    "param": 4,
-    "level": 1,
-    "info": "4% average closest distance to other unique values. Chosen since tail height is not strictly cardinal."
+    "param": 2,
+    "level": 2,
+    "info": "2% average closest distance to other unique values. Chosen since tail height is not strictly cardinal."
 }
 
 pert_parking_area = {
     "col": "PARKING_AREA(SQM)",
     "func": pert_percent,
-    "param": 6,
-    "level": 1,
-    "info": "6% average closest distance to other unique values. Chosen since parking area is not strictly cardinal."
+    "param": 3,
+    "level": 2,
+    "info": "3% average closest distance to other unique values. Chosen since parking area is not strictly cardinal."
 }
 
 pert_vsbty = {
     "col": "VISIBILITY(MILES)",
-    "func": pert_ordinal_n,
-    "param": 1,
-    "level": 1,
-    "info": "According to documentation value might be inaccurate by 1."
+    "func": pert_resolution,
+    "param": 0.25,
+    "level": 3,
+    "info": "According to documentation value might be inaccurate by 0.25."
 }
 
 pert_event_br = {
     "col": "EVENT_BR",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_dz = {
     "col": "EVENT_DZ",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_fg = {
     "col": "EVENT_FG",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_fu = {
     "col": "EVENT_FU",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_gr = {
     "col": "EVENT_GR",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_gs = {
     "col": "EVENT_GS",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_hz = {
     "col": "EVENT_HZ",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_ic = {
     "col": "EVENT_IC",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 
 pert_event_ts = {
     "col": "EVENT_TS",
-    "func": pert_ordinal_n,
-    "param": 1,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
     "level": 1,
     "info": "Swap to neighbours."
 }
 pert_event_sn = {
     "col": "EVENT_SN",
-    "func": pert_extreme,
-    "param": (2, 3),
-    "level": 2,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
+    "level": 1,
     "info": "No value for event 3 found. Might influence data on occurrence."
 }
 pert_event_ra = {
     "col": "EVENT_RA",
-    "func": pert_ordinal_n,
-    "param": 1,
+    "func": pert_cat,
+    "param": [0, 1, 2, 3],
     "level": 1,
     "info": "Swap to neighbours."
 }
@@ -260,18 +287,19 @@ pert_sea_level_pressure = {
 }
 pert_dep_delay = {
     "col": "DEP_DELAY(MINS)",
-    "func": pert_ordinal_n,
-    "param": 5,
+    "func": pert_resolution,
+    "param": 15,
     "level": 1,
-    "info": "Default Switch. Low Priority."
+    "info": "Into the next problematic class"
 }
 pert_runway_error = {
     "col": "RUNWAY_ERROR(PERC)",
     "func": pert_resolution,
-    "param": 0.2,
+    "param": 0.1,
     "level": 3,
     "info": "Only values in 0.2 steps are permitted."
 }
+
 
 def filter_options(option, threshold):
     return option["level"] >= threshold
@@ -296,6 +324,8 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
     pert_lst = []
     cc = 1
     for opt in options:
+        if cc == 10:
+            print("BREAK!")
         print("Starting run " + str(cc) + "/" + str(len(options)))
         c = 1
         for i, row in data_copy.iterrows():
@@ -421,4 +451,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # print(pert_cat(1, [0,1,2,3]))
     main()
