@@ -389,7 +389,7 @@ def main():
     if not os.path.exists(model_file_path):
         raise FileNotFoundError(f"Cannot find model through path '{model_file_path}'.")
 
-    # Load model from joblib
+    # Load model from joblib nb
     model = joblib.load(model_file_path)
 
     # Load search settings params from json
@@ -451,5 +451,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # print(pert_cat(1, [0,1,2,3]))
-    main()
+    print(pert_percent(20, 1.345))
+    # main()
