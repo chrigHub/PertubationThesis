@@ -171,56 +171,56 @@ pert_event_br = {
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_dz = {
     "col": "EVENT_DZ",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_fg = {
     "col": "EVENT_FG",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_fu = {
     "col": "EVENT_FU",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_gr = {
     "col": "EVENT_GR",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_gs = {
     "col": "EVENT_GS",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_hz = {
     "col": "EVENT_HZ",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_ic = {
     "col": "EVENT_IC",
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 
 pert_event_ts = {
@@ -235,7 +235,7 @@ pert_event_sn = {
     "func": pert_cat,
     "param": [0, 1, 2, 3],
     "level": 1,
-    "info": "No value for event 3 found. Might influence data on occurrence."
+    "info": "Swap to neighbours."
 }
 pert_event_ra = {
     "col": "EVENT_RA",
