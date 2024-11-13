@@ -49,16 +49,6 @@ def pert_percent(val, perc):
     return arr
 
 
-def pert_percent_int(val, perc):
-    arr = []
-    for i in range(1, int(val * (perc / 100)), 1):
-        low_val = val - i
-        high_val = val + i
-        arr.append(low_val)
-        arr.append(high_val)
-    return arr
-
-
 def pert_cat(val, cats):
     # Find the closest value in the array to the specified value
     array = np.array(cats)
@@ -74,23 +64,6 @@ def pert_cat(val, cats):
     # Return the values corresponding to the selected indices
     perturbed_values = array[indices].tolist()
     return perturbed_values
-
-
-def pert_ordinal_n(val, n):
-    arr = []
-    for v in range(1, n + 1):
-        low_val = val - v
-        high_val = val + v
-        arr.append(low_val)
-        arr.append(high_val)
-    return arr
-
-
-def pert_extreme(val, tup):
-    arr = []
-    if val == tup[0]:
-        return [tup[1]]
-    return []
 
 
 def pert_res_or_perc(val, tup):
@@ -451,5 +424,5 @@ def main():
 
 
 if __name__ == "__main__":
-    print(pert_percent(20, 1.345))
+    print(pert_resolution(5, 0.1))
     # main()
