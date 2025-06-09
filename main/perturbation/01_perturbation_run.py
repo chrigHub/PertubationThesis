@@ -1,4 +1,5 @@
 import argparse
+import json
 
 import numpy as np
 import pandas as pd
@@ -112,7 +113,7 @@ pert_wind_drct = {
     "level": 3,
     "info": "5 Degree resolution"
 }
-# TODO possibly add combined measures for wind drct and elapsed time
+
 pert_elapsed_time = {
     "col": "CRS_ELAPSED_TIME(MINS)",
     "func": pert_percent,
@@ -274,21 +275,18 @@ pert_runway_error = {
 }
 
 
-def filter_options(option, threshold):
-    return option["level"] >= threshold
+def filter_options_by_level(options, level):
+    return [option for option in options if int(option["level"]) >= int(level)]
 
 
-def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosity=1):
+def perturbate(data: pd.DataFrame, options: list, verbosity=1):
     assert type(data) == pd.DataFrame, f"got type {type(data)} for param 'data'. Expected  pd.DataFrame"
-    if option_threshold:
-        assert type(option_threshold) == int, f"got type {type(option_threshold)} for param 'mode'. Expected str"
     assert type(options) == list, f"got type {type(options)} for param 'options'. Expected list"
-    print(options)
-    options = list(filter(lambda opt: opt["level"] >= option_threshold, options))
-    print(options)
 
-    pert_start, pert_start_string = data_manage_utils.print_time()
-    print("Starting perturbation at: " + pert_start_string)
+    if verbosity >= 1:
+        print(f"Declared options: {options}")
+        pert_start, pert_start_string = data_manage_utils.print_time()
+        print("Starting perturbation at: " + pert_start_string)
 
     data_copy = data.copy()
     data_copy["pert_id"] = None
@@ -298,8 +296,10 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
     cc = 1
     for opt in options:
         if cc == 10:
-            print("BREAK!")
-        print("Starting run " + str(cc) + "/" + str(len(options)))
+            if verbosity >= 1:
+                print("BREAK!")
+        if verbosity >= 1:
+            print("Starting run " + str(cc) + "/" + str(len(options)))
         c = 1
         for i, row in data_copy.iterrows():
             if verbosity > 1:
@@ -319,13 +319,18 @@ def perturbate(data: pd.DataFrame, option_threshold: int, options: list, verbosi
                 # pert_df = pert_df.append(row_df.T,ignore_index=True)
             c += 1
         end, end_string = data_manage_utils.print_time(time_format="%Y_%m_%d %H:%M:%S")
-        print("Ending run " + str(cc) + "/" + str(len(options)) + " at: " + end_string)
+        if verbosity >= 1:
+            print("Ending run " + str(cc) + "/" + str(len(options)) + " at: " + end_string)
         cc += 1
-    print("Converting list to pd.DataFrame...")
+
+    if verbosity >= 1:
+        print("Converting list to pd.DataFrame...")
     pert_df = pd.DataFrame(pert_lst, columns=df_cols)
     pert_end, pert_end_string = data_manage_utils.print_time()
-    print("Ending perturbation at: " + pert_end_string)
-    print(f"Time elapsed: {pert_end - pert_start}")
+
+    if verbosity >= 1:
+        print("Ending perturbation at: " + pert_end_string)
+        print(f"Time elapsed: {pert_end - pert_start}")
     return pert_df
 
 
@@ -351,6 +356,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model")
     parser.add_argument("--folder")
+    parser.add_argument("--experiment")
+    parser.add_argument("--minlevel")
     args = parser.parse_args()
 
     # LOAD MODEL DATA
@@ -392,6 +399,7 @@ def main():
     print(f"Shape of true labels: {y_test.shape} \n Shape of pred labels: {y_pred.shape}")
 
     # OPTION SELECTION
+    # Inserting all options
     options = [pert_dep_delay, pert_elapsed_time, pert_nr_prev_flights, pert_approach_speed, pert_tail_height,
                pert_parking_area, pert_winglets_yn, pert_temp, pert_dew_temp, pert_humidity, pert_wind_drct,
                pert_wind_speed, pert_1hour_pert, pert_sea_level_pressure, pert_vsbty, pert_event_br, pert_event_dz,
@@ -405,24 +413,66 @@ def main():
             idxs.append(i)
     options = [options[i] for i in idxs]
 
+    # FILTERING OPTIONS
+    if args.minlevel:
+        print(f"Filtering options to only inlcude levels >= {args.minlevel}")
+        print(f"Original #options: {len(options)}")
+
+        options = filter_options_by_level(options, args.minlevel)
+
+        print(f"Filtered #options: {len(options)}")
+
     # COLUMN CHECKING
     check_column_diff(X=X_test, options=options)
 
     # PERFORM PERTURBATION
     X_test["y_true"] = y_test
-    pert_data = perturbate(X_test.iloc[:], OPT_THRESHOLD, options)
-    print("Predicting on created dataframe")
 
-    # PREDICT ON PERTURBATED DATA
-    if do_scale:
-        pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-3]]))
+    # Alternate mode for time and data complexity graph
+    if args.experiment == "true":
+        print("Starting with alternate experimentation mode:")
+        option_subsets = [options[:i + 1] for i in range(len(options))]
+        result_arr = []
+        for i, subset in enumerate(option_subsets):
+            print(f"Run with {i + 1}/{len(option_subsets)} options.")
+            pert_start, pert_start_string = data_manage_utils.print_time()
+            pert_data = perturbate(X_test.iloc[:], subset, verbosity=0)
+            pert_end, pert_end_string = data_manage_utils.print_time()
+            pert_time = pert_end - pert_start
+            size = len(pert_data)
+            print(f"\tSize of data: {size}. Factor {len(pert_data) / len(X_test):.1f}")
+            pred_start, pert_start_string = data_manage_utils.print_time()
+            if do_scale:
+                pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-3]]))
+            else:
+                pert_data['y'] = model.predict(pert_data[pert_data.columns[:-3]])
+            pred_end, pert_start_string = data_manage_utils.print_time()
+            pred_time = pred_end - pred_start
+            print(f"\tEnding run after {pert_time + pred_time}.")
+            result_arr.append((pert_time, pred_time, size))
+
+        # SAVE EXPERIMENTAL DATA FOR PLOTTING
+        fullname = os.path.join(path, "analysis")
+        os.makedirs(fullname, exist_ok=True)
+        fullname = os.path.join(fullname, "pert_complexity.csv")
+        pert_df = pd.DataFrame(result_arr, columns=['Perturbation Time', "Prediction Time", "Number of Rows"])
+        print(f"Saving file to: {fullname}")
+        pert_df.to_csv(fullname)
+
     else:
-        pert_data['y'] = model.predict(pert_data[pert_data.columns[:-3]])
+        print("Starting with normal perturbation mode:")
+        pert_data = perturbate(X_test.iloc[:], options)
+        print("Predicting on created dataframe")
 
-    # SAVE DATA
-    save_pert_data(data=pert_data, out_path=path)
+        # PREDICT ON PERTURBATED DATA
+        if do_scale:
+            pert_data['y'] = model.predict(scaler.transform(pert_data[pert_data.columns[:-3]]))
+        else:
+            pert_data['y'] = model.predict(pert_data[pert_data.columns[:-3]])
+
+        # SAVE DATA
+        save_pert_data(data=pert_data, out_path=path)
 
 
 if __name__ == "__main__":
-    print(pert_resolution(5, 0.1))
-    # main()
+    main()
