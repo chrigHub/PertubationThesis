@@ -35,6 +35,7 @@ def load_processed_data_by_folder(filepath: str):
 
     return X_train, y_train, X_test, y_test
 
+
 def load_processed_data_by_folder_as_numpy(filepath: str):
     assert isinstance(filepath, str), f"filepath expected type 'str'. Got {type(filepath)}"
     assert os.path.exists(filepath), f"filepath {filepath} does not exist!"
@@ -45,6 +46,7 @@ def load_processed_data_by_folder_as_numpy(filepath: str):
     y_test = pd.read_pickle(os.path.join(filepath, "y_test_df.pkl")).to_numpy()
 
     return X_train, y_train, X_test, y_test
+
 
 def print_shapes(X_train: pd.DataFrame, y_train: pd.DataFrame, X_test: pd.DataFrame, y_test: pd.DataFrame):
     assert isinstance(X_train, pd.DataFrame), f"Expected type 'pd.DataFrame'. Got {type(X_train)}"
@@ -93,7 +95,8 @@ def col_stats_to_string(df: pd.DataFrame, attr_names: [] = []):
             ret = ret + "\n" + "Range: [" + str(df[attr].min()) + ";" + str(df[attr].max()) + "]"
     return ret
 
-def col_stats_to_table(df: pd.DataFrame, attr_names: [] = [], headers = []):
+
+def col_stats_to_table(df: pd.DataFrame, attr_names: [] = [], headers=[]):
     if not attr_names:
         attr_names = df.columns
     if not headers:
@@ -145,6 +148,7 @@ def col_stats_to_table(df: pd.DataFrame, attr_names: [] = [], headers = []):
 
     ret_df = pd.DataFrame(data=ret, columns=cols)
     return ret_df
+
 
 def read_csv_from_subfolder(path):
     if path:
@@ -263,7 +267,8 @@ def save_search_params(out_dir: str, param_dict: dict, filename: str = "estimati
     with open(filename, 'w') as data:
         data.write(json.dumps(param_dict))
 
-def find_data_path_by_settings_file(settings_path, root_path = "./"):
+
+def find_data_path_by_settings_file(settings_path, root_path="./"):
     # Check if file exists
     if not os.path.exists(settings_path):
         raise FileNotFoundError(f"Path '{settings_path}' does not exist. Program will end.")
@@ -339,3 +344,80 @@ def decode_cyclical(df: pd.DataFrame, sin_col: str, cos_col: str, max_value: int
     df.insert(index_of_col, column=sin_col.split("_SIN")[0], value=decoded_values)
     df = df.drop(labels=[sin_col, cos_col], axis="columns")
     return df
+
+
+def convert_specified_columns(df, columns_to_convert, placeholders=["tbd"]):
+    df_clean = df.copy()
+
+    for col in columns_to_convert:
+        if col not in df_clean.columns or df_clean[col].dtype != "object":
+            continue  # Skip if column doesn't exist or isn't object type
+
+        # Convert all values to strings first to handle mixed types
+        df_clean[col] = df_clean[col].astype(str)
+
+        # Step 1: Replace placeholder with NaN
+        for placeholder in placeholders:
+            df_clean[col] = df_clean[col].replace(
+                to_replace=f"^{placeholder}$",
+                value=np.nan,
+                regex=True
+            )
+        df_clean[col] = df_clean[col].str.replace(r"\s+", "", regex=True)  # Remove all spaces
+        df_clean[col] = df_clean[col].str.replace(",", ".")
+        converted = pd.to_numeric(df_clean[col], errors="coerce")
+
+        if (converted.dropna().mod(1) == 0).all():
+            df_clean[col] = converted.astype("Int64")
+        else:
+            df_clean[col] = converted.astype("float64")
+
+    return df_clean
+
+
+def describe_dataframe_structure(df, example_condition=None):
+    structure = []
+    for col in df.columns:
+        # Simplify data type
+        dtype = str(df[col].dtype)
+        if dtype == "object":
+            type_str = "string"
+        elif "Int64" in dtype:
+            type_str = "int"
+        elif "float" in dtype:
+            type_str = "float"
+        else:
+            type_str = dtype
+
+        # Calculate range
+        if type_str in ["int", "float"]:
+            min_val = df[col].min()
+            max_val = df[col].max()
+            range_str = f"[{min_val};{max_val}]"
+        else:  # string or other
+            char_lengths = df[col].astype(str).str.len()
+            min_len = char_lengths.min()
+            max_len = char_lengths.max()
+            range_str = f"char({min_len}-{max_len})"
+
+        # Get example value
+        example = None
+        if example_condition:
+            try:
+                filtered = df.query(example_condition)
+                if not filtered.empty:
+                    example = filtered[col].iloc[0]
+            except:
+                pass
+        if example is None:
+            example = df[col].dropna().iloc[0] if not df[col].dropna().empty else None
+
+        structure.append({
+            "Name": col,
+            "Type": type_str,
+            "Range": range_str,
+            "# Null": df[col].isnull().sum(),
+            "Example": example
+        })
+
+    return pd.DataFrame(structure)
