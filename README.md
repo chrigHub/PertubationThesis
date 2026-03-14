@@ -1,0 +1,91 @@
+# Master Thesis: Assessing the Reliability of Flight Delay Predictions Using the Perturbation Approach
+
+**Author:** Christoph Großauer
+**Supervisor:** Assoz.-Prof. Mag. Dr. Christoph Schütz
+**University:** Johannes Kepler Universität
+**Institute:** Institute of Business Informatics - Data & Knowledge Engineering
+
+---
+
+## Project Overview
+This project implements the Reliability Assessment Process via the Perturbation Approach within the aviation domain on a real world dataset.
+For this, three models are trained to classify "early", "on-time" or "late" arrivals at Hartsfield-Jackson Airport in Atlanta Georgia United States.
+After training and evaluation criteria are met for each model, the trained models' outputs are tested for reliability according to the Realiability Assessment Process with the Perturbation Approach.
+Finally, these findings are analyzed and used as the basis for the research question of the connected Master's Thesis.
+
+
+---
+
+## Project Structure
+The project must include a **`data`** folder in its root directory with the following structure:
+
+├── data/
+│   ├── input/             
+|   |   ├── data_raw/
+|   |   |   ├── METAR_US/                 # METAR reports
+|   |   |   ├── notams/       
+|   |   |   |   ├──katl/                  # KATL specific NOTAMs
+|   |   |   |   |   ├──01                 # NOTAMs captured in January
+*   *   *   *   *   *                     # Proceed for each month of the year with the folders
+|   |   |   |   |   ├──12                 # NOTAMs captured in December
+|   |   |   ├── US_DomesticFlights/       # Flight data
+|   |   |   |   ├──2016/              
+|   |   |   |   ├──2017/ 
+|   |   |   ├── airports.csv              # Airport data
+|   |   |   ├── all_aircrafts_FAA.csv     # Airport data
+|   |   |   ├── runways.csv               # Runway data
+|   |   ├── scraped_aircraft/             # Scraped aircraft files
+|   ├── perturbation/    
+|   |   ├── pert_output/                  # Folder in which the perturbation outputs are put
+|   ├── preparation/ 
+|   |   ├── prepped_files/                # Folder in which the prepared datasets are put
+|   ├── preprocessing/ 
+|   |   ├── base/    
+|   |   |   ├── class/                    # Test/Train split datasets with classified target lable
+|   |   |   ├── reg/                      # Test/Train split datasets with continual target feature
+|   |   |   ├── data.pkl                  # Completely integrated dataset without Test/Train split
+|   ├── training/ 
+|   |   ├── training_results/             # Includes the results of all trained models
+    
+### Notes:
+- NOTAM files were not eligible for pusblishing. Therefore, the NOTAM files have to be downloaded manually into the correct folder with the correct structure for the project to work.
+- Ensure all paths in the code are relative to the project root.
+
+├── data/
+│   ├── input/             
+|   |   ├── data_raw/
+|   |   |   ├── METAR_US/                 # METAR reports
+|   |   |   ├── notams/       
+|   |   |   |   ├──katl/                  # KATL specific NOTAMs
+|   |   |   |   |   ├──01                 # NOTAMs captured in January
+*   *   *   *   *   *                     # Proceed for each month of the year with the folders
+|   |   |   |   |   ├──12                 # NOTAMs captured in December
+|   |   |   ├── US_DomesticFlights/       # Flight data
+|   |   |   |   ├──2016/              
+|   |   |   |   ├──2017/ 
+|   |   |   ├── airports.csv              # Airport data
+|   |   |   ├── all_aircrafts_FAA.csv     # Airport data
+|   |   |   ├── runways.csv               # Runway data
+|   |   ├── scraped_aircraft/             # Scraped aircraft files
+|   ├── perturbation/    
+|   |   ├── pert_output/                  # Folder in which the perturbation outputs are put
+|   ├── preparation/ 
+|   |   ├── prepped_files/                # Folder in which the prepared datasets are put
+|   ├── preprocessing/ 
+|   |   ├── base/    
+|   |   |   ├── class/                    # Test/Train split datasets with classified target lable
+|   |   |   ├── reg/                      # Test/Train split datasets with continual target feature
+|   |   |   ├── data.pkl                  # Completely integrated dataset without Test/Train split
+|   ├── training/ 
+|   |   ├── training_results/             # Includes the results of all trained models
+
+## Setup Instructions
+
+### 1. Prerequisites
+- Python 3.8+
+- Jupyter Notebook/Lab (if using notebooks)
+- Required Python packages (see `requirements.txt`)
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
