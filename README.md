@@ -189,13 +189,19 @@ resources/
 - All files in analysis folders are created to gather knowledge of the dataset and formulate decisions based on these findings as described in the text of the thesis.
 - All files in archive folders are not functional and only retained for documentation purposes.
 
-## Setup Instructions
+## Project Run Instructions
 
 ### 1. Prerequisites
 - Python 3.8+
-- Jupyter Notebook/Lab (if using notebooks)
-- Required Python packages (see `requirements.txt`)
+- Conda 22.9+
+- Jupyter Notebook/Lab
+- Required Python packages as given by the conda environment
+- ./data/input/ file structure as seen in the **`Data Folder`** section
 
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
+### 2. Project steps
+1.  Run all files in ./main/preparation/ in the order given by their filename
+2a. Run all files in ./main/preprocessing/ in the order given by their filename
+2b. Run the file in the ./main/preprocessing/production/ folder as needed
+ 3. Run the ./main/training/train.py file with fitting parameters. For example as seen in ./resoures/sh/.
+ 4. Run the ./main/perturbation/perturbation_run.py file with fitting model and folder parameter name to indicate the model type and version. For example  "--model XGB --folder 2024_06_17-1513"
+ 5. Alter the "loading_folder" and "loading_spec" variables in the first cell of ./main/perturbation/02_perturbation_analysis.ipynb and run the file
