@@ -199,9 +199,9 @@ resources/
 - ./data/input/ file structure as seen in the **`Data Folder`** section
 
 ### 2. Project steps
-1.  Run all files in ./main/preparation/ in the order given by their filename
-2a. Run all files in ./main/preprocessing/ in the order given by their filename
-2b. Run the file in the ./main/preprocessing/production/ folder as needed
- 3. Run the ./main/training/train.py file with fitting parameters. For example as seen in ./resoures/sh/.
- 4. Run the ./main/perturbation/perturbation_run.py file with fitting model and folder parameter name to indicate the model type and version. For example  "--model XGB --folder 2024_06_17-1513"
- 5. Alter the "loading_folder" and "loading_spec" variables in the first cell of ./main/perturbation/02_perturbation_analysis.ipynb and run the file
+1. Run all files in ./main/preparation/ in the order given by their filename
+3. Run all files in ./main/preprocessing/ in the order given by their filename
+4. Run the file in the ./main/preprocessing/production/ folder as needed
+5. Run the ./main/training/train.py file with fitting parameters. For example as seen in ./resoures/sh/
+6. Run the ./main/perturbation/perturbation_run.py file with fitting model and folder parameter name to indicate the model type and version. For example  "--model XGB --folder 2024_06_17-1513"
+7. Alter the "loading_folder" and "loading_spec" variables in the first cell of ./main/perturbation/02_perturbation_analysis.ipynb and run the file
