@@ -173,7 +173,7 @@ perturbation/                    # Includes all used perturbation notebooks and 
 └── pert_test_results_{model_name}.pkl # Created data matrix for quantitative analysis
 
 ### Notes
-- All files in analysis folders are craeted to gather knowledge of the dataset and formulate decisions based on these findings as described in the text of the thesis.
+- All files in analysis folders are created to gather knowledge of the dataset and formulate decisions based on these findings as described in the text of the thesis.
 - All files in archive folders are not functional and only retained for documentation purposes.
 
 ## Setup Instructions
