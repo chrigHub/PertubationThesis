@@ -17,7 +17,9 @@ Finally, these findings are analyzed and used as the basis for the research ques
 ---
 
 ## Project Structure
-The project must include a **`data`** folder in its root directory with the following structure:
+The path structure and filenames in this project must stay as shown in this repository for the relative paths to work as intended.
+The project must include a **`data`** folder in its root directory with a specific structure. The **`data`** folder is provided in the published repository but absent from the git repository.
+The **`data`** folder must follow the project structure:
 
 data/
 
@@ -81,33 +83,14 @@ data/
 - NOTAM files were not eligible for pusblishing. Therefore, the NOTAM files have to be downloaded manually into the correct folder with the correct structure for the project to work.
 - Ensure all paths in the code are relative to the project root.
 
-├── data/
-│   ├── input/             
-|   |   ├── data_raw/
-|   |   |   ├── METAR_US/                 # METAR reports
-|   |   |   ├── notams/       
-|   |   |   |   ├──katl/                  # KATL specific NOTAMs
-|   |   |   |   |   ├──01                 # NOTAMs captured in January
-*   *   *   *   *   *                     # Proceed for each month of the year with the folders
-|   |   |   |   |   ├──12                 # NOTAMs captured in December
-|   |   |   ├── US_DomesticFlights/       # Flight data
-|   |   |   |   ├──2016/              
-|   |   |   |   ├──2017/ 
-|   |   |   ├── airports.csv              # Airport data
-|   |   |   ├── all_aircrafts_FAA.csv     # Airport data
-|   |   |   ├── runways.csv               # Runway data
-|   |   ├── scraped_aircraft/             # Scraped aircraft files
-|   ├── perturbation/    
-|   |   ├── pert_output/                  # Folder in which the perturbation outputs are put
-|   ├── preparation/ 
-|   |   ├── prepped_files/                # Folder in which the prepared datasets are put
-|   ├── preprocessing/ 
-|   |   ├── base/    
-|   |   |   ├── class/                    # Test/Train split datasets with classified target lable
-|   |   |   ├── reg/                      # Test/Train split datasets with continual target feature
-|   |   |   ├── data.pkl                  # Completely integrated dataset without Test/Train split
-|   ├── training/ 
-|   |   ├── training_results/             # Includes the results of all trained models
+### General project structure
+All other necessary project files are given in the published repository as well as in the git repository.
+The contents of the project looks as follows:
+
+data/                                 # Data folder as specified above
+docs/                                 # Folder to store documentation and images
+main/                                 # Includes all project files with python code
+resources/                            # Includes shell scripts and python environment declaration
 
 ## Setup Instructions
 
