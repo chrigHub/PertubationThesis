@@ -38,7 +38,6 @@ The path structure and filenames in this project must stay as shown in this repo
 
 The **`data`** folder is absent from the git repository due to high memory requirements and has to be taken from the published repository. 
 Additionally, NOTAM data was not allowed for publishing. In order to setup a working project directory, the NOTAM data has to be downloaded manually in the format specified below in the shown project structure.
-The project must include a **`data`** folder in its root directory with a specific structure as seen below.
 The **`data`** folder must follow the project structure:
 
 data/
