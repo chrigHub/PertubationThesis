@@ -88,8 +88,11 @@ All other necessary project files are given in the published repository as well 
 The contents of the project looks as follows:
 
 data/                                 # Data folder as specified above
+
 docs/                                 # Folder to store documentation and images
+
 main/                                 # Includes all project files with python code
+
 resources/                            # Includes shell scripts and python environment declaration
 
 ## Setup Instructions
