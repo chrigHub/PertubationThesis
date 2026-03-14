@@ -20,7 +20,23 @@ Finally, these findings are analyzed and used as the basis for the research ques
 ---
 
 ## Project Structure
+The contents of the project looks as follows:
+
+project_root/
+
+├── data/                                 # Data folder
+
+├── docs/                                 # Folder to store documentation and images
+
+├── main/                                 # Includes all project files with python code
+
+└── resources/                            # Includes shell scripts and python environment declaration
+
 The path structure and filenames in this project must stay as shown in this repository for the relative paths to work as intended.
+
+### Data Folder
+
+The **`data`** folder is absent from the git repository due to high memory requirements and has to be taken from the published repository. 
 The project must include a **`data`** folder in its root directory with a specific structure. The **`data`** folder is provided in the published repository but absent from the git repository.
 The **`data`** folder must follow the project structure:
 
@@ -86,19 +102,6 @@ data/
 - NOTAM files were not eligible for pusblishing. Therefore, the NOTAM files have to be downloaded manually into the correct folder with the correct structure for the project to work.
 - Ensure all paths in the code are relative to the project root.
 
-### General project structure
-All other necessary project files are given in the published repository as well as in the git repository.
-The contents of the project looks as follows:
-
-project_root/
-
-├── data/                                 # Data folder as specified above
-
-├── docs/                                 # Folder to store documentation and images
-
-├── main/                                 # Includes all project files with python code
-
-└── resources/                            # Includes shell scripts and python environment declaration
 
 ## Setup Instructions
 
