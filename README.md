@@ -87,13 +87,15 @@ data/
 All other necessary project files are given in the published repository as well as in the git repository.
 The contents of the project looks as follows:
 
-data/                                 # Data folder as specified above
+project_root/
 
-docs/                                 # Folder to store documentation and images
+├── data/                                 # Data folder as specified above
 
-main/                                 # Includes all project files with python code
+├── docs/                                 # Folder to store documentation and images
 
-resources/                            # Includes shell scripts and python environment declaration
+├── main/                                 # Includes all project files with python code
+
+└── resources/                            # Includes shell scripts and python environment declaration
 
 ## Setup Instructions
 
