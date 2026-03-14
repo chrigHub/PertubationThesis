@@ -11,7 +11,7 @@
 ---
 
 ## Project Overview
-This project implements the Reliability Assessment Process via the Perturbation Approach within the aviation domain on a real world dataset.
+This project implements the Reliability Assessment Process in combination with the Perturbation Approach within the aviation domain on a real world dataset.
 For this, three models are trained to classify "early", "on-time" or "late" arrivals at Hartsfield-Jackson Airport in Atlanta Georgia United States.
 After training and evaluation criteria are met for each model, the trained models' outputs are tested for reliability according to the Realiability Assessment Process with the Perturbation Approach.
 Finally, these findings are analyzed and used as the basis for the research question of the connected Master's Thesis.
@@ -154,7 +154,7 @@ training/
 └── train.py         # Trains a model based on the given parameters (main function for training)
 
 
-#### Perturbation Module
+#### Perturbation Module ####
 The **`perturbation`** module loads the trained models and their respective test data from which it creates the perturbed input matrix that is given to the loaded model to evaluate the reliability of the predictions.
 The python file **`01_perturbation_run.py`** creates the perturbation dataset that is analysed and altered with additional rows for better readability and identification of perturbation findings in **`02_perturbation_analysis_{model_name}.ipynb`**. The latter creates the **`pert_view_{model_name}.pkl`** and **`pert_test_results_{model_name}.pkl`** files that are used for graphical and quantitative analysis of the perturbation results respectively.
 
@@ -171,6 +171,19 @@ perturbation/                    # Includes all used perturbation notebooks and 
 ├── pert_view_{model_name}.pkl # Created data matrix for graphical analysis
 
 └── pert_test_results_{model_name}.pkl # Created data matrix for quantitative analysis
+
+### Resources Folder ###
+The resources folder contains shell scripts that were used to call the trai.py file with the correct parameters as well as the conda environment yaml file and connected script files.
+
+resources/                   
+
+├── env/      
+
+│   ├── ma-env.yml                 # YAML file with needed dependencies for the project
+
+│   └── sync_env.sh                 # Shell script to load the YAML file dependencies
+
+└── sh/                 # Folder with shell scripts to run the train.py file
 
 ### Notes
 - All files in analysis folders are created to gather knowledge of the dataset and formulate decisions based on these findings as described in the text of the thesis.
