@@ -7,6 +7,9 @@ import os
 import re
 import ast
 import json
+
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
 from main.utils.assertion_utils import assert_dtype
 
 
@@ -384,6 +387,10 @@ def describe_dataframe_structure(df, example_condition=None):
             type_str = "string"
         elif "Int64" in dtype:
             type_str = "int"
+        elif "int64" in dtype:
+            type_str = "int"
+        elif "int32" in dtype:
+            type_str = "int"
         elif "float" in dtype:
             type_str = "float"
         else:
@@ -421,3 +428,36 @@ def describe_dataframe_structure(df, example_condition=None):
         })
 
     return pd.DataFrame(structure)
+
+
+def print_measures(y_pred, y_true, true_labels):
+    if type(y_pred) == pd.DataFrame:
+        y_pred = y_pred[y_pred.columns[0]]
+    if type(y_true) == pd.DataFrame:
+        y_true = y_true[y_true.columns[0]]
+    ret_dict = {}
+    print(20 * "-")
+    print(f"Global measures")
+    print(f"Number of entries: {len(y_pred)}")
+    acc = accuracy_score(y_true=y_true, y_pred=y_pred, normalize=True)
+    ret_dict.update({"acc": acc})
+    print(f"Accuracy: {acc:.5f}")
+    print(f"Precision-µ: {precision_score(y_true=y_true, y_pred=y_pred, average='micro'):.5f}")
+    print(f"Recall-µ: {recall_score(y_true=y_true, y_pred=y_pred, average='micro'):.5f}")
+    print(f"F1-Score-µ: {f1_score(y_true=y_true, y_pred=y_pred, average='micro'):.5f}")
+    print("=")
+    print(f"Precision-M: {precision_score(y_true=y_true, y_pred=y_pred, average='macro'):.5f}")
+    print(f"Recall-M: {recall_score(y_true=y_true, y_pred=y_pred, average='macro'):.5f}")
+    print(f"F1-Score-M: {f1_score(y_true=y_true, y_pred=y_pred, average='macro'):.5f}")
+    for label in true_labels:
+        if (label in y_pred) or (label in y_true):
+            y_pred_filtered = [1 if val == label else 0 for val in y_pred]
+            y_true_filtered = [1 if val == label else 0 for val in y_true]
+            print(20 * "-")
+            print(f"Measures for label '{label}'")
+            print(f"Number of entries: {sum(y_true_filtered)}")
+            prec = precision_score(y_true=y_true_filtered, y_pred=y_pred_filtered)
+            print(f"Precision score: {prec:.5f}")
+            print(f"Recall score: {recall_score(y_true=y_true_filtered, y_pred=y_pred_filtered):.5f}")
+            ret_dict.update({"prec" + str(label): prec})
+    return ret_dict
