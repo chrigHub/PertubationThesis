@@ -1,3 +1,9 @@
 /data/
 .idea/
 /main/preprocessing/analysis/analytics/rfc/result_df.pkl
+/main/perturbation/pert_test_results_adab.pkl
+/main/perturbation/pert_test_results_rf.pkl
+/main/perturbation/pert_test_results_xgb.pkl
+/main/perturbation/pert_view_adab.pkl
+/main/perturbation/pert_view_rf.pkl
+/main/perturbation/pert_view_xgb.pkl
