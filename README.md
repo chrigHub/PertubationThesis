@@ -22,11 +22,11 @@ The contents of the project look as follows:
 
 project_root/
 
-├── data/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    # Data folder
+├── data/    ### Data folder
 
-├── main/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                                # Includes all project files with python code
+├── main/          ### Includes all project files with python code
 
-└── resources/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                           # Includes shell scripts and python environment declaration
+└── resources/               ### Includes shell scripts and python environment declaration
 
 The path structure and filenames in this project must stay as shown in this example for the relative paths to work as intended.
 
@@ -42,21 +42,21 @@ data/
 
 │   ├── data_raw/
 
-│   │   ├── METAR_US/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                # METAR reports
+│   │   ├── METAR_US/   ### METAR reports
 
 │   │   ├── notams/
 
-│   │   │   ├── katl/   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;               # KATL specific NOTAMs
+│   │   │   ├── katl/                  ### KATL specific NOTAMs
 
-│   │   │   │   ├── 01/    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            # NOTAMs captured in January
+│   │   │   │   ├── 01/                ### NOTAMs captured in January
 
-│   │   │   │   ├── 02/   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;             # NOTAMs captured in February
+│   │   │   │   ├── 02/                ### NOTAMs captured in February
 
 │   │   │   │   ├── ...
 
-│   │   │   │   └── 12/   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;             # NOTAMs captured in December
+│   │   │   │   └── 12/                ### NOTAMs captured in December
 
-│   │   ├── US_DomesticFlights/  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Flight data
+│   │   ├── US_DomesticFlights/       ### Flight data
 
 │   │   │   ├── 2016/
 
@@ -64,31 +64,31 @@ data/
 
 │   │   │   └── ...
 
-│   │   ├── airports.csv    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          # Airport data
+│   │   ├── airports.csv            ### Airport data
 
-│   │   ├── all_aircrafts_FAA.csv  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   # FAA aircraft data
+│   │   ├── all_aircrafts_FAA.csv     ### FAA aircraft data
 
-│   │   └── runways.csv     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          # Runway data
+│   │   └── runways.csv             ### Runway data
 
-│   └── scraped_aircraft/     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Scraped aircraft files
+│   └── scraped_aircraft/          ### Scraped aircraft files
 
 ├── preparation/
 
-│   └── prepped_files/      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          # Prepared datasets
+│   └── prepped_files/            ### Prepared datasets
 
 ├── preprocessing/
 
 │   └── base/
 
-│       ├── class/           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         # Test/Train split (classified target label)
+│       ├── class/                ### Test/Train split (classified target label)
 
-│       ├── reg/            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          # Test/Train split (continual target feature)
+│       ├── reg/                 ### Test/Train split (continual target feature)
 
-│       └── data.pkl       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           # Integrated dataset (no split)
+│       └── data.pkl               ### Integrated dataset (no split)
 
 └── training/
 
- └── training_results/    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         # Results of all trained models
+ └── training_results/             ### Results of all trained models
 
 ### Main Folder
 The **`main`** folder includes all project code for preprocessing steps, training processes, perturbation processes and analysis. 
@@ -102,21 +102,21 @@ converts all units into readable scales and alters their naming to improve reada
 
 preparation/
 
-├── 01_flight_prep.ipynb    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Load and prepare flight data
+├── 01_flight_prep.ipynb          ### Load and prepare flight data
 
-├── 02_airport_prep.ipynb    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Load and prepare airport data
+├── 02_airport_prep.ipynb          ### Load and prepare airport data
 
-├── 03_runway_prep.ipynb     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     # Load and prepare runway data
+├── 03_runway_prep.ipynb        ### Load and prepare runway data
 
-├── 04_aircraft_prep.ipynb     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     # Load and prepare aircraft data
+├── 04_aircraft_prep.ipynb         ### Load and prepare aircraft data
 
-├── 05_metar_prep.ipynb     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     # Load and prepare METAR data
+├── 05_metar_prep.ipynb        ### Load and prepare METAR data
 
-├── 06_notam_prep.ipynb   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Load and prepare NOTAM data
+├── 06_notam_prep.ipynb       ### Load and prepare NOTAM data
 
-├── 07_integration.ipynb   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Integrates all prepared datasets into a single data table
+├── 07_integration.ipynb          ### Integrates all prepared datasets into a single data table
 
-└── 08_name_value_conversion.ipynb &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # Converts the features' units and names
+└── 08_name_value_conversion.ipynb  ### Converts the features' units and names
 
 #### Preprocessing Module ####
 The **`preprocessing`** module takes the final dataset established in the previous module and creates the classes for
@@ -127,13 +127,13 @@ classes. The variations are created based on experimentation and findings in ana
 
 ├── preprocessing/
 
-├── analysis/   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Analysing specific aspects of the data file
+├── analysis/    ### Analysing specific aspects of the data file
 
-├── production/   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Create the varying data variations
+├── production/       ### Create the varying data variations
 
-├── 01_target_creation.ipynb      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    # Create the target classes for the combined dataset
+├── 01_target_creation.ipynb        ### Create the target classes for the combined dataset
 
-└── 02_test_train_split.ipynb    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Splits data into training and test set
+└── 02_test_train_split.ipynb          ### Splits data into training and test set
 
 #### Training Module ####
 The **`training`** module trains a model based on parameters given to the **`train.py`** file. This file is the main
@@ -146,15 +146,15 @@ training/
 
 ├── analysis/
 
-│   └── 03_evaluation_2.0.ipynb    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;             # Evaluating trained models and baselines with confusion matrices
+│   └── 03_evaluation_2.0.ipynb              ### Evaluating trained models and baselines with confusion matrices
 
-├── baseline_training.ipynb  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Constructs baseline models
+├── baseline_training.ipynb       ### Constructs baseline models
 
-├── data.py   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Data holder object for the training process
+├── data.py        ### Data holder object for the training process
 
-├── estimation.py  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       # Estimator object responsible for parameter estimation settings
+├── estimation.py        ### Estimator object responsible for parameter estimation settings
 
-└── train.py   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      # Trains a model based on the given parameters (main function for training)
+└── train.py        ### Trains a model based on the given parameters (main function for training)
 
 
 #### Perturbation Module ####
@@ -166,17 +166,17 @@ additional rows for better readability and identification of perturbation findin
 **`pert_test_results_{model_name}.pkl`** files that are used for graphical and quantitative analysis of the
 perturbation results, respectively.
 
-perturbation/    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                # Includes all used perturbation notebooks and the python file to create perturbed data entries     
+perturbation/                  ### Includes all used perturbation notebooks and the python file to create perturbed data entries     
 
-├── analysis/    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                # Additional analysis regarding perturbation
+├── analysis/                 ### Additional analysis regarding perturbation
 
-├── 01_perturbation_run.py   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    # Python file that constructs the perturbed data inputs for further reliability analysis and stores them as .pkl
+├── 01_perturbation_run.py       ### Python file that constructs the perturbed data inputs for further reliability analysis and stores them as .pkl
 
-├── 02_perturbation_analysis_{model_name}.ipynb  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     # Jupyter notebooks for perturbation analysis for each model
+├── 02_perturbation_analysis_{model_name}.ipynb       ### Jupyter notebooks for perturbation analysis for each model
 
-├── pert_view_{model_name}.pkl &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  # Created data matrix for graphical analysis
+├── pert_view_{model_name}.pkl   ### Created data matrix for graphical analysis
 
-└── pert_test_results_{model_name}.pkl &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  # Created data matrix for quantitative analysis
+└── pert_test_results_{model_name}.pkl   ### Created data matrix for quantitative analysis
 
 ### Resources Folder ###
 The resources folder contains shell scripts that were used to call the trai.py file with the correct parameters as well
@@ -186,11 +186,11 @@ resources/
 
 ├── env/      
 
-│   ├── ma-env.yml      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           # YAML file with needed dependencies for the project
+│   ├── ma-env.yml               ### YAML file with needed dependencies for the project
 
-│   └── sync_env.sh    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;             # Shell script to load the YAML file dependencies
+│   └── sync_env.sh               ### Shell script to load the YAML file dependencies
 
-└── sh/       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          # Folder with shell scripts to run the train.py file
+└── sh/               ### Folder with shell scripts to run the train.py file
 
 ### Notes
 - All files in analysis folders are created to gather knowledge of the dataset and formulate decisions based on these findings as described in the text of the thesis.
